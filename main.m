@@ -20,11 +20,7 @@ angular_acceleration = [0,0,0];
 force = [0,0,0];
 
 %%Map Initialization
-for x = 1:600
-    for y = 1:600
-        map(x,y) = 0;
-    end
-end
+map = zeros(600,600);
 %%returns a list of all ramps in the map. Each ramp contains a list of start and end positions, and friction
 [ramp_list] = ramp_list(); 
 

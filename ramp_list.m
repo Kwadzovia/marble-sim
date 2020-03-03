@@ -3,7 +3,7 @@
 function [list] = ramp_list()
 
     %%ramp 1
-    ramp(1).startX = 0;
+    ramp(1).startX = 1;
     ramp(1).startY = 500;
     ramp(1).endX = 100;
     ramp(1).endY = 500;
