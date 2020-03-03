@@ -3,39 +3,35 @@
 clc; %%clears command window
         
 %%constants
-gravity = 9.806374046543; %%m/s^2
+gravity = -9.806374046543; %%m/s^2
 friction = 0.22;
 mass = 0.02; %%kg
 
 %%initial conditions
     %%(0,0) is the bottome left corner of the plate. 
-xpos = 0; %%m
-ypos = 0.6; %%m
+position = [0,0.6,0];
     %%Linear values
-xLinVelocity = 0; %%m/s
-yLinVelocity = 0; %%m/s
-xLinAcceleration = 0; %%m/s^2
-yLinAcceleration = 0; %%m/s^2
+linear_velocity = [0,0,0];
+linear_acceleration = [0,0,0];
     %%angular values
-xAngVelocity = 0; %%m^2/s
-yAngVelocity = 0; %%m^2/s
-xAngAcceleration = 0; %%m^2/s^2
-yAngAcceleration = 0; %%m^2/s^2
+angular_velocity = [0,0,0];
+angular_acceleration = [0,0,0];
     %%forces
-xForce = 0; %%(kg)(m/s^2)
-yForce = 0; %%(kg)(m/s^2)
+force = [0,0,0];
 
 %% each second is 10 values for t. example: 20 seconds is t=200
 for t = 0:400 %%400 chosen because if we get to this time something has gone horribly wrong
     
     %%line below is update_tick which updates everything based on previous
     %%conditions.
-    [xpos, ypos, xLinVelocity, yLinVelocity, xLinAcceleration, yLinAcceleration, xAngVelocity, yAngVelocity, xAngAcceleration, yAngAcceleration, xForce, yForce] = update_tick(xpos, ypos, xLinVelocity, yLinVelocity, xLinAcceleration, yLinAcceleration, xAngVelocity, yAngVelocity, xAngAcceleration, yAngAcceleration, xForce, yForce);
+    [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
     %%print output to command window
-    fprintf("t= " + t/10 + ", x= " + xpos + ", y= " + ypos + ", xVelLin= " + xLinVelocity + ", yVelLin= " + yLinVelocity)
-    fprintf(", xAccelLin= " + xLinAcceleration + ", yAccelLin= " + yLinAcceleration + ", xVelANG= " + xAngVelocity)
-    fprintf(", yVelANG= " + yAngVelocity + ", xAccelANG= " + xAngAcceleration + ", yAccelANG = " + yAngAcceleration)
-    fprintf(", xForce = " + xForce + ", yForce= " + yForce)
+    fprintf("t= " + t/10 + ", x= " + position(1) + ", y= " + position(2))
+    fprintf(", xVelLin= " + linear_velocity(1) + ", yVelLin= " + linear_velocity(2))
+    fprintf(", xAccelLin= " + linear_acceleration(1) + ", yAccelLin= " + linear_acceleration(2))
+    fprintf(", xVelANG= " + angular_velocity(1)+ ", yVelANG= " + angular_velocity(2))
+    fprintf(", xAccelANG= " + angular_acceleration(1) + ", yAccelANG = " + angular_acceleration(2))
+    fprintf(", xForce = " + force(1) + ", yForce= " + force(2))
     fprintf(newline)
 end

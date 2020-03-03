@@ -1,30 +1,29 @@
 %%This updates position, velocity, and acceleration based on values from
 %%last tick.
-function [xpos, ypos, xLinVelocity, yLinVelocity, xLinAcceleration, yLinAcceleration, xAngVelocity, yAngVelocity, xAngAcceleration, yAngAcceleration, xForce, yForce] = update_tick(xpos, ypos, xLinVelocity, yLinVelocity, xLinAcceleration, yLinAcceleration, xAngVelocity, yAngVelocity, xAngAcceleration, yAngAcceleration, xForce, yForce)
+function [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration)
 
-    if yLinVelocity ~= 0 %%if y linear velocity is not zero then add that velocity to y position
-        ypos = ypos + yLinVelocity/10; %%divide by 10 because of our time interval
+    if linear_velocity(2) ~= 0 %%if y linear velocity is not zero then add that velocity to y position
+        position(2) = position(2) + linear_velocity(2)/10; %%divide by 10 because of our time interval
     end
     
-    if xLinVelocity ~= 0 %%if x linear velocity is not zero then add that velocity to x position
-        
-        xpos = xpos + xLinVelocity/10; %%divide by 10 because of our time interval
+    if linear_velocity(1) ~= 0 %%if x linear velocity is not zero then add that velocity to x position
+        position(1) = position(1) + linear_velocity(1)/10; %%divide by 10 because of our time interval
     end
 
-    if yAngAcceleration ~= 0 %%if y angular acceleration is not zero then add that acceleration to y angular velocity
-        yAngVelocity = yAngVelocity + yAngAcceleration/10; %%divide by 10 because of our time interval
+    if angular_acceleration(2) ~= 0 %%if y angular acceleration is not zero then add that acceleration to y angular velocity
+        angular_velocity(2) = angular_velocity(2) + angular_acceleration(2)/10; %%divide by 10 because of our time interval
     end
 
-    if xAngAcceleration ~= 0 %%if x angular acceleration is not zero then add that acceleration to x angular velocity
-        xAngVelocity = xAngVelocity + xAngAcceleration/10; %%divide by 10 because of our time interval
+    if angular_acceleration(1) ~= 0 %%if x angular acceleration is not zero then add that acceleration to x angular velocity
+        angular_velocity(1) = angular_velocity(1) + angular_acceleration(1)/10; %%divide by 10 because of our time interval
     end
 
-    if yLinAcceleration ~= 0 %%if y linear acceleration is not zero then add that acceleration to y linear velocity
-        yLinVelocity = yLinVelocity + yLinAcceleration/10; %%divide by 10 because of our time interval
+    if linear_acceleration(2) ~= 0 %%if y linear acceleration is not zero then add that acceleration to y linear velocity
+        linear_velocity(2) = linear_velocity(2) + linear_acceleration(2)/10; %%divide by 10 because of our time interval
     end
 
-    if xLinAcceleration ~= 0 %%if x linear acceleration is not zero then add that acceleration to x linear velocity
-        xLinVelocity = xLinVelocity + xLinAcceleration/10; %%divide by 10 because of our time interval
+    if linear_acceleration(1) ~= 0 %%if x linear acceleration is not zero then add that acceleration to x linear velocity
+        linear_velocity(1) = linear_velocity(1) + linear_acceleration(1)/10; %%divide by 10 because of our time interval
     end
-   
+    
 end
