@@ -8,8 +8,8 @@ friction = 0.22;
 mass = 0.02; %%kg
 
 %%initial conditions
-    %%(0,0) is the bottome left corner of the plate. 
-position = [0,0.6,0];
+    %%(1,1) is the bottome left corner of the plate. 
+position = [1,600,0];
     %%Linear values
 linear_velocity = [0,0,0];
 linear_acceleration = [0,0,0];
@@ -20,11 +20,13 @@ angular_acceleration = [0,0,0];
 force = [0,0,0];
 
 %%Map Initialization
-for x = 0:600
-    for y = 0:600
-        map(x,y) = 0
+for x = 1:600
+    for y = 1:600
+        map(x,y) = 0;
     end
 end
+%%returns a list of all ramps in the map. Each ramp contains a list of start and end positions, and friction
+[ramp_list] = ramp_list(); 
 
 %% each second is 10 values for t. example: 20 seconds is t=200
 for t = 0:400 %%400 chosen because if we get to this time something has gone horribly wrong
