@@ -3,28 +3,28 @@
 clc; %%clears command window
         
 %%constants
-gravity = 9.806374046543; %%m/s^2
+gravity = -9.806374046543; %%m/s^2
 friction = 0.22;
 mass = 0.02; %%kg
 
 %%initial conditions
     %%(0,0) is the bottome left corner of the plate. 
-position = [0,0.6];
+position = [0,0.6,0];
     %%Linear values
-linear_velocity = [0,0];
-linear_acceleration = [0,0];
+linear_velocity = [0,0,0];
+linear_acceleration = [0,0,0];
     %%angular values
-angular_velocity = [0,0];
-angular_acceleration = [0,0];
+angular_velocity = [0,0,0];
+angular_acceleration = [0,0,0];
     %%forces
-force = [0,0];
+force = [0,0,0];
 
 %% each second is 10 values for t. example: 20 seconds is t=200
 for t = 0:400 %%400 chosen because if we get to this time something has gone horribly wrong
     
     %%line below is update_tick which updates everything based on previous
     %%conditions.
-    [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force);
+    [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
     %%print output to command window
     fprintf("t= " + t/10 + ", x= " + position(1) + ", y= " + position(2))
