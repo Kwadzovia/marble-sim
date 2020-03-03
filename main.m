@@ -19,6 +19,13 @@ angular_acceleration = [0,0,0];
     %%forces
 force = [0,0,0];
 
+%%Map Initialization
+for x = 0:600
+    for y = 0:600
+        map(x,y) = 0
+    end
+end
+
 %% each second is 10 values for t. example: 20 seconds is t=200
 for t = 0:400 %%400 chosen because if we get to this time something has gone horribly wrong
     
