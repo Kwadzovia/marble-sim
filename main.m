@@ -11,14 +11,15 @@ mass = 0.02; %%kg
     %%(0,0) is the bottome left corner of the plate. 
 position = [0,0.6,0];
     %%Linear values
-linear_velocity = [0,0,0];
-linear_acceleration = [0,0,0];
+linear_velocity = [1,1,0];
+linear_acceleration = [1,1,0];
     %%angular values
 angular_velocity = [0,0,0];
 angular_acceleration = [0,0,0];
     %%forces
 force = [0,0,0];
-
+figure
+set(gcf, 'Position',  [100, 100, 600, 600]) %sets graph window size and position
 %% each second is 10 values for t. example: 20 seconds is t=200
 for t = 0:400 %%400 chosen because if we get to this time something has gone horribly wrong
     
@@ -34,4 +35,6 @@ for t = 0:400 %%400 chosen because if we get to this time something has gone hor
     fprintf(", xAccelANG= " + angular_acceleration(1) + ", yAccelANG = " + angular_acceleration(2))
     fprintf(", xForce = " + force(1) + ", yForce= " + force(2))
     fprintf(newline)
+    draw(position)
+    pause(0.01)
 end
