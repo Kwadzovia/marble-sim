@@ -19,7 +19,7 @@ angular_acceleration = [0,0,0];
     %%forces
 force = [0,0,0];
 figure
-set(gcf, 'Position',  [100, 100, 600, 600])
+set(gcf, 'Position',  [100, 100, 600, 600]) %sets graph window size and position
 %% each second is 10 values for t. example: 20 seconds is t=200
 for t = 0:400 %%400 chosen because if we get to this time something has gone horribly wrong
     
