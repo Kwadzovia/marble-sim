@@ -9,7 +9,7 @@ mass = 0.02; %%kg
 
 %%initial conditions
     %%(1,1) is the bottome left corner of the plate. 
-position = [1,600,0];
+position = [1,1,0];
     %%Linear values
 linear_velocity = [1,1,0];
 linear_acceleration = [1,1,0];
@@ -22,12 +22,28 @@ force = [0,0,0];
 %%Map Initialization
 map = zeros(600,600);
 %%returns a list of all ramps in the map. Each ramp contains a list of start and end positions, and friction
-[ramp_list] = ramp_list(); 
+[ramp_list] = ramp_list();
 
+%%goes through each ramp, finds the line between points, and changes the
+%%value of each part of the line to 1 in map.
+for a = 1:length(ramp_list)
+    m = (ramp_list(a).endY - ramp_list(a).startY)/(ramp_list(a).endX - ramp_list(a).startX); %%slope
+    b = ramp_list(a).startY - m*ramp_list(a).startX;
+    for i = ramp_list(a).startX : ramp_list(a).endX %%only check within bounds of the line
+        for j = ramp_list(a).startY : ramp_list(a).endY %%only check within bounds of the line
+            if (m*i + b) == j %%if the value of i satisfies the line equation then this point is on the line
+                map(i,j) = 1;
+            end
+        end
+    end
+end
+
+%%init the graph visualization
 figure
 set(gcf, 'Position',  [100, 100, 600, 600]) %sets graph window size and position
+
 %% each second is 10 values for t. example: 20 seconds is t=200
-for t = 0:400 %%400 chosen because if we get to this time something has gone horribly wrong
+for t = 0:100
     
     %%line below is update_tick which updates everything based on previous
     %%conditions.
@@ -41,6 +57,8 @@ for t = 0:400 %%400 chosen because if we get to this time something has gone hor
     fprintf(", xAccelANG= " + angular_acceleration(1) + ", yAccelANG = " + angular_acceleration(2))
     fprintf(", xForce = " + force(1) + ", yForce= " + force(2))
     fprintf(newline)
+    
+    %%draws the sphere
     draw(position)
-    pause(0.01)
+    pause(0.01) %%done so we can actually see whats happening
 end
