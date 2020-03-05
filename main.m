@@ -23,19 +23,8 @@ force = [0,0,0];
 map = zeros(600,600);
 [ramp_list] = ramp_list();
 map = map_ramp(ramp_list,map);
+[solidX, solidY] = make_solid(map);
 
-solidX = [];
-solidY = [];
-solid_index = 1;
-for i = 1:600
-    for j = 1:600
-        if map(i,j) == 1
-            solidX(solid_index) = i;
-            solidY(solid_index) = j;
-            solid_index = solid_index + 1;
-        end
-    end
-end
 
 %%init the graph visualization
 figure
