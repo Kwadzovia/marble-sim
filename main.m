@@ -56,15 +56,11 @@ for i = 1:600
     end
 end
 
+%%init the graph visualization
 figure
 set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
-scatter(solidX,solidY);
-pbaspect([1,1,1]); %sets aspect ratio to 1:1
-axis([0 600 0 600]); %sets plot size to 600 by 600
-
-%%init the graph visualization
-%%figure
-%%set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
+scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
+hold on
 %% each second is 10 values for t. example: 20 seconds is t=200
 for t = 0:400
     
@@ -82,5 +78,5 @@ for t = 0:400
     %%fprintf(newline)
     
     %%draws the sphere
-    %%draw(position)
+    draw(position)
 end
