@@ -2,12 +2,12 @@
 
 clc; %%clears command window
         
-%%constants
+%%================================constants================================
 gravity = -9.806374046543; %%m/s^2
 friction = 0.22;
 mass = 0.02; %%kg
 
-%%initial conditions
+%%=============================initial conditions=========================
     %%(1,1) is the bottome left corner of the plate. 
 position = [1,1,0];
     %%Linear values
@@ -19,34 +19,39 @@ angular_acceleration = [0,0,0];
     %%forces
 force = [0,0,0];
 
-%%Map Initialization
+%%==============================Map Initialization========================
 map = zeros(600,600);
 [ramp_list] = ramp_list();
 map = map_ramp(ramp_list,map);
 [solidX, solidY] = make_solid(map);
 
 
-%%init the graph visualization
+%%=============================init graph visualization====================
 figure
 set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
 scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
 hold on
+
+%%=================================Main For===============================
 %% each second is 10 values for t. example: 20 seconds is t=200
 for t = 0:400
     
-    %%line below is update_tick which updates everything based on previous
-    %%conditions.
+    %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
-    
-    %%print output to command window
-    %%fprintf("t= " + t/10 + ", x= " + position(1) + ", y= " + position(2))
-    %%fprintf(", xVelLin= " + linear_velocity(1) + ", yVelLin= " + linear_velocity(2))
-    %%fprintf(", xAccelLin= " + linear_acceleration(1) + ", yAccelLin= " + linear_acceleration(2))
-    %%fprintf(", xVelANG= " + angular_velocity(1)+ ", yVelANG= " + angular_velocity(2))
-    %%fprintf(", xAccelANG= " + angular_acceleration(1) + ", yAccelANG = " + angular_acceleration(2))
-    %%fprintf(", xForce = " + force(1) + ", yForce= " + force(2))
-    %%fprintf(newline)
-    
+        
     %%draws the sphere
     draw(position)
+    
+    %%uncomment to output to command window
+    %%output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
+end
+
+function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
+    fprintf("t= " + t/10 + ", x= " + position(1) + ", y= " + position(2))
+    fprintf(", xVelLin= " + linear_velocity(1) + ", yVelLin= " + linear_velocity(2))
+    fprintf(", xAccelLin= " + linear_acceleration(1) + ", yAccelLin= " + linear_acceleration(2))
+    fprintf(", xVelANG= " + angular_velocity(1)+ ", yVelANG= " + angular_velocity(2))
+    fprintf(", xAccelANG= " + angular_acceleration(1) + ", yAccelANG = " + angular_acceleration(2))
+    fprintf(", xForce = " + force(1) + ", yForce= " + force(2))
+    fprintf(newline)
 end
