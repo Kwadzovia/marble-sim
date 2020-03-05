@@ -21,27 +21,8 @@ force = [0,0,0];
 
 %%Map Initialization
 map = zeros(600,600);
-%%returns a list of all ramps in the map. Each ramp contains a list of start and end positions, and friction
 [ramp_list] = ramp_list();
-
-%%goes through each ramp, finds the line between points, and changes the
-%%value of each part of the line to 1 in map.
-for a = 1:length(ramp_list)
-    m = (ramp_list(a).endY - ramp_list(a).startY)/(ramp_list(a).endX - ramp_list(a).startX); %%slope
-    b = ramp_list(a).startY - m*(ramp_list(a).startX);
-    
-    %%for debugging
-    fprintf("Ramp " + a + " is y = " + m + "x + " + b);
-    fprintf(newline);
-    
-    for i = min(ramp_list(a).startX, ramp_list(a).endX) : max(ramp_list(a).startX, ramp_list(a).endX) %%only check within bounds of the line
-        for j = min(ramp_list(a).startY, ramp_list(a).endY) : max(ramp_list(a).startY, ramp_list(a).endY) %%only check within bounds of the line
-            if m*i + b == j %%if the value of i satisfies the line equation then this point is on the line
-                map(i,j) = 1;
-            end
-        end
-    end
-end
+map = map_ramp(ramp_list,map);
 
 solidX = [];
 solidY = [];
