@@ -3,11 +3,11 @@
 function [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration)
 
     if linear_velocity(2) ~= 0 %%if y linear velocity is not zero then add that velocity to y position
-        position(2) = position(2) + linear_velocity(2)/10; %%divide by 10 because of our time interval
+        position(2) = int16(position(2) + linear_velocity(2)/10); %%divide by 10 because of our time interval
     end
     
     if linear_velocity(1) ~= 0 %%if x linear velocity is not zero then add that velocity to x position
-        position(1) = position(1) + linear_velocity(1)/10; %%divide by 10 because of our time interval
+        position(1) = int16(position(1) + linear_velocity(1)/10); %%divide by 10 because of our time interval
     end
 
     if angular_acceleration(2) ~= 0 %%if y angular acceleration is not zero then add that acceleration to y angular velocity

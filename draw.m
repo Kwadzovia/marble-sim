@@ -1,7 +1,7 @@
 %%draws the sphere
 function [] = draw(position)
 
-r = 20;
+r = 5;
 theta = linspace(0,2*pi,100); %creates 100 evenly spaced points between 0 and 2*pi
 x = r*cos(theta) + position(1);
 y = r*sin(theta) + position(2);

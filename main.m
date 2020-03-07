@@ -6,13 +6,14 @@ clc; %%clears command window
 gravity = -9.806374046543; %%m/s^2
 friction = 0.22;
 mass = 0.02; %%kg
+radius = 5; %%mm
 
 %%=============================initial conditions=========================
     %%(1,1) is the bottome left corner of the plate. 
-position = [1,1,0];
+position = [110,550,0];
     %%Linear values
-linear_velocity = [1,1,0];
-linear_acceleration = [1,1,0];
+linear_velocity = [0,0,0];
+linear_acceleration = [5,-5,0];
     %%angular values
 angular_velocity = [0,0,0];
 angular_acceleration = [0,0,0];
@@ -38,7 +39,11 @@ for t = 0:400
     
     %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
-        
+    
+    [boundsX, boundsY] = detect_collision(position, map, radius);
+    if (boundsX < 0 || boundsX > 601 || boundsY < 0 || boundsY > 601)
+        return %%kills the program if the marble leaves
+    end
     %%draws the sphere
     draw(position)
     
