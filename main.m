@@ -8,17 +8,19 @@ friction = 0.22;
 mass = 0.02; %%kg
 radius = 5; %%mm
 
+
 %%=============================initial conditions=========================
     %%(1,1) is the bottome left corner of the plate. 
 position = [110,550,0];
     %%Linear values
 linear_velocity = [0,0,0];
-linear_acceleration = [3,-5,0];
+linear_acceleration = [30,gravity/mass,0];
     %%angular values
 angular_velocity = [0,0,0];
 angular_acceleration = [0,0,0];
     %%forces
 force = [0,0,0];
+
 
 %%==============================Map Initialization========================
 map = zeros(600,600);
@@ -33,12 +35,14 @@ set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
 scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
 hold on
 
+
 %%=================================Main For===============================
-%% each second is 10 values for t. example: 20 seconds is t=200
-for t = 0:400
+%% each second is 100 values for t. example: 20 seconds is t=2000
+for t = 0:4000
     
     %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
+    
     
     %%====================checks if there is a collision==================
     colX = 0;
@@ -51,23 +55,24 @@ for t = 0:400
         return %%kills the program if the marble leaves
     end
     
-    if(col_occur)
-        %%do some mathy stuff, these values are just placeholder for
-        %%testing
-        linear_acceleration(2) = 0;
-        linear_velcoity(2) = 0;
-    else
-        %%do some mathy stuff, these values are just placeholder for
-        %%testing
-        linear_accleration = -5;
+    
+    %%==========================collision handling========================
+    if(col_occur) %%handles the collision if there was one
+        [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = collision_handle(colX, colY, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
+    else %%otherwise keep gravitational acceleration going
+        linear_acceleration(2) = gravity/mass;
     end
     
     
-    %%draws the sphere
-    draw(position, radius)
+    %%============================display=================================
+    if mod(t, 5) == 0%%draws the sphere every 5 ticks
+        draw(position, radius)
+    end
     
     %%uncomment to output to command window
-    output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
+    %%output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
+    
+    pause(0.0001) %%done so we can actually see whats happening
 end
 
 function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
