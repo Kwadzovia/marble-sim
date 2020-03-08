@@ -73,7 +73,7 @@ for t = 0:4000
     end
     
     
-    %%draws the sphere
+    %%draws the sphere every 5 ticks
     if mod(t, 5) == 0
         draw(position, radius)
     end
