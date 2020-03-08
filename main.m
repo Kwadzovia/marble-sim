@@ -13,7 +13,7 @@ radius = 5; %%mm
 position = [110,550,0];
     %%Linear values
 linear_velocity = [0,0,0];
-linear_acceleration = [5,-5,0];
+linear_acceleration = [3,-5,0];
     %%angular values
 angular_velocity = [0,0,0];
 angular_acceleration = [0,0,0];
@@ -40,12 +40,12 @@ for t = 0:400
     %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
-    [boundsX, boundsY] = detect_collision(position, map, radius);
-    if (boundsX < 0 || boundsX > 601 || boundsY < 0 || boundsY > 601)
+    out_of_bounds = detect_collision(position, map, radius);
+    if (out_of_bounds)
         return %%kills the program if the marble leaves
     end
     %%draws the sphere
-    draw(position)
+    draw(position, radius)
     
     %%uncomment to output to command window
     %%output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)

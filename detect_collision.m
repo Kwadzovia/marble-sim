@@ -1,23 +1,30 @@
 %%detects if the sphere is in contact with a surface.
-function [i,j] = detect_collision(position, map, radius)
-    j = 0; %%need to init in case the first i value checked is outside the boundary area and j is never defined
-    for i = position(1)-radius : position(1)+radius %%x values in a square around the marble
-        if i > 0 && i < 601
-             for j = position(2)-radius : position(2)+radius %%y values in a square around the marble
-                 if j > 0 && j < 601
-                    if map(i,j) == 1
-                         fprintf("square collision detected!")
-                         fprintf(newline)
+function out_of_bounds = detect_collision(position, map, radius)
+    out_of_bounds = false;
+    
+    theta = linspace(0,2*pi,100); %creates 100 evenly spaced points between 0 and 2*pi;
+    x = radius*cos(theta) + position(1);
+    y = radius*sin(theta) + position(2);
+    
+    for i = 1:length(x)
+        if x(i) > 0.5 && x(i) < 602
+            for j = 1:length(y)
+                if y(j) > 0.5 && y(j) < 602
+                    if map(int16(x(i)),int16(y(j))) == 1
+                            fprintf("collision detected")
+                            fprintf(newline)
                     end
-                 else
-                     fprintf("i component out of bounds! j = " + j + " position centre is: (" + position(1) + "," + position(2) + ")")
+                else
+                     fprintf("y component out of bounds! y = " + y(j) + " position centre is: (" + position(1) + "," + position(2) + ")")
                      fprintf(newline)
+                     out_of_bounds = true;
                      return
-                 end
-             end
+                end
+            end
         else
-            fprintf("i component out of bounds! i = " + i + " position centre is: (" + position(1) + "," + position(2) + ")")
+            fprintf("x component out of bounds! x = " + x(i) + " position centre is: (" + position(1) + "," + position(2) + ")")
             fprintf(newline)
+            out_of_bounds = true;
             return
         end
     end

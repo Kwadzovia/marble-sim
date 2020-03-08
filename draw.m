@@ -1,10 +1,9 @@
 %%draws the sphere
-function [] = draw(position)
+function [] = draw(position, radius)
 
-r = 5;
 theta = linspace(0,2*pi,100); %creates 100 evenly spaced points between 0 and 2*pi
-x = r*cos(theta) + position(1);
-y = r*sin(theta) + position(2);
+x = radius*cos(theta) + position(1);
+y = radius*sin(theta) + position(2);
 
 plot(x,y);
 pbaspect([1,1,1]); %sets aspect ratio to 1:1
