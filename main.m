@@ -40,15 +40,34 @@ for t = 0:400
     %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
-    out_of_bounds = detect_collision(position, map, radius);
+    %%====================checks if there is a collision==================
+    colX = 0;
+    colY = 0;
+    col_occur = false;
+    
+    [out_of_bounds,colX,colY,col_occur] = detect_collision(position, map, radius);
+    
     if (out_of_bounds)
         return %%kills the program if the marble leaves
     end
+    
+    if(col_occur)
+        %%do some mathy stuff, these values are just placeholder for
+        %%testing
+        linear_acceleration(2) = 0;
+        linear_velcoity(2) = 0;
+    else
+        %%do some mathy stuff, these values are just placeholder for
+        %%testing
+        linear_accleration = -5;
+    end
+    
+    
     %%draws the sphere
     draw(position, radius)
     
     %%uncomment to output to command window
-    %%output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
+    output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
 end
 
 function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
