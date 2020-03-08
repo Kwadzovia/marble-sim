@@ -13,7 +13,7 @@ radius = 5; %%mm
 position = [110,550,0];
     %%Linear values
 linear_velocity = [0,0,0];
-linear_acceleration = [3,-5,0];
+linear_acceleration = [30,gravity/mass,0];
     %%angular values
 angular_velocity = [0,0,0];
 angular_acceleration = [0,0,0];
@@ -34,8 +34,8 @@ scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting diffe
 hold on
 
 %%=================================Main For===============================
-%% each second is 10 values for t. example: 20 seconds is t=200
-for t = 0:400
+%% each second is 100 values for t. example: 20 seconds is t=2000
+for t = 0:4000
     
     %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
@@ -54,20 +54,34 @@ for t = 0:400
     if(col_occur)
         %%do some mathy stuff, these values are just placeholder for
         %%testing
-        linear_acceleration(2) = 0;
-        linear_velcoity(2) = 0;
+        if colY < position(2) %%if collision was below the centre
+            linear_acceleration(2) = 0;
+            linear_velocity(2) = 0;
+        end
+        %%if collision was to the right of the sphere and the acceleration was in that direction
+        if colX > position(1) && linear_acceleration(1)>0
+            linear_acceleration(1) = -linear_acceleration(1); %invert the acceleration
+            linear_velocity(1) = 0; %reset velocity
+        end
+        %%if collision was to the left of the sphere and the acceleration was in that direction
+        if colX < position(1) && linear_acceleration(1)<0
+            linear_acceleration(1) = -linear_acceleration(1); %%invert the acceleration
+            linear_velocity(1) = 0; %%reset velocity
+        end
     else
-        %%do some mathy stuff, these values are just placeholder for
-        %%testing
-        linear_accleration = -5;
+        linear_acceleration(2) = gravity/mass;
     end
     
     
     %%draws the sphere
-    draw(position, radius)
+    if mod(t, 5) == 0
+        draw(position, radius)
+    end
     
     %%uncomment to output to command window
     output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
+    
+    pause(0.0001) %%done so we can actually see whats happening
 end
 
 function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
