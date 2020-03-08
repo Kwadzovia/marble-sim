@@ -6,13 +6,14 @@ clc; %%clears command window
 gravity = -9.806374046543; %%m/s^2
 friction = 0.22;
 mass = 0.02; %%kg
+radius = 5; %%mm
 
 %%=============================initial conditions=========================
     %%(1,1) is the bottome left corner of the plate. 
-position = [1,1,0];
+position = [110,550,0];
     %%Linear values
-linear_velocity = [1,1,0];
-linear_acceleration = [1,1,0];
+linear_velocity = [0,0,0];
+linear_acceleration = [3,-5,0];
     %%angular values
 angular_velocity = [0,0,0];
 angular_acceleration = [0,0,0];
@@ -38,12 +39,35 @@ for t = 0:400
     
     %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
-        
+    
+    %%====================checks if there is a collision==================
+    colX = 0;
+    colY = 0;
+    col_occur = false;
+    
+    [out_of_bounds,colX,colY,col_occur] = detect_collision(position, map, radius);
+    
+    if (out_of_bounds)
+        return %%kills the program if the marble leaves
+    end
+    
+    if(col_occur)
+        %%do some mathy stuff, these values are just placeholder for
+        %%testing
+        linear_acceleration(2) = 0;
+        linear_velcoity(2) = 0;
+    else
+        %%do some mathy stuff, these values are just placeholder for
+        %%testing
+        linear_accleration = -5;
+    end
+    
+    
     %%draws the sphere
-    draw(position)
+    draw(position, radius)
     
     %%uncomment to output to command window
-    %%output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
+    output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
 end
 
 function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
