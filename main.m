@@ -79,7 +79,7 @@ for t = 0:4000
     end
     
     %%uncomment to output to command window
-    output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
+    %%output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
     
     pause(0.0001) %%done so we can actually see whats happening
 end

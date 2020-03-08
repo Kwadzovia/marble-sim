@@ -1,9 +1,7 @@
 %%draws the sphere
 function [] = draw(position, radius)
 
-theta = linspace(0,2*pi,100); %creates 100 evenly spaced points between 0 and 2*pi
-x = radius*cos(theta) + position(1);
-y = radius*sin(theta) + position(2);
+[x,y] = discreet_cart_circle(position, radius);
 
 plot(x,y);
 pbaspect([1,1,1]); %sets aspect ratio to 1:1
