@@ -30,10 +30,14 @@ map = map_ramp(ramp_list,map);
 
 
 %%=============================init graph visualization====================
-figure
-set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
-scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
-hold on
+% figure
+% set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
+% scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
+% hold on
+
+
+%%=============================Simulation Container========================
+position_History = zeros(4000,2);
 
 
 %%=================================Main For===============================
@@ -42,7 +46,8 @@ for t = 0:4000
     
     %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
-    
+    position_History(t+1,1) = position(1);
+    position_History(t+1,2) = position(2);
     
     %%====================checks if there is a collision==================
     colX = 0;
@@ -52,6 +57,16 @@ for t = 0:4000
     [out_of_bounds,colX,colY,col_occur] = detect_collision(position, map, radius);
     
     if (out_of_bounds)
+        animation_Output = animation_handler(position_History,radius,0,20,solidX,solidY); %Saves Simulation Animation in a variable
+        
+        figure
+        set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
+        scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
+        xlim([0 600]) %sets axis at 600
+        ylim([0 600])
+        hold on
+        movie(animation_Output,2,20) % Runs saved animation one time at 20 fps
+        
         return %%kills the program if the marble leaves
     end
     
@@ -65,14 +80,14 @@ for t = 0:4000
     
     
     %%============================display=================================
-    if mod(t, 5) == 0%%draws the sphere every 5 ticks
-        draw(position, radius)
-    end
+    %if mod(t, 5) == 0%%draws the sphere every 5 ticks
+        %draw(position, radius)
+    %end
     
     %%uncomment to output to command window
     %%output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
     
-    pause(0.0001) %%done so we can actually see whats happening
+    %pause(0.0001) %%done so we can actually see whats happening
 end
 
 function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
