@@ -1,5 +1,5 @@
 %%detects if the sphere is in contact with a surface.
-function [out_of_bounds,forceX,forceY,col_occur] = detect_collision(position, radius)
+function [out_of_bounds,forceX,forceY,col_occur] = detect_collision(position, radius, ramp)
     
     theta = linspace(pi,2*pi/2,50)
     x = int16(radius*cos(theta)) + position(1);
@@ -7,9 +7,10 @@ function [out_of_bounds,forceX,forceY,col_occur] = detect_collision(position, ra
     
     
     for i = 1:2
-        if x < ramp(1
-        for i = 1:50
-
+        if (x < position(1)) and (x > position(1))
+        for j = 1:50
+            ytemp = ramp(i,x(j))
+            if (ytemp - y(j)) < 1 %arbitrary distance probably pretty small
 
         end
     end

@@ -21,21 +21,25 @@ angular_acceleration = [0,0,0];
     %%forces
 force = [0,0,0];
 
-
-%%==============================Map Initialization========================
-map = zeros(600,600);
-[ramp_list] = ramp_list();
-map = map_ramp(ramp_list,map);
-[solidX, solidY] = make_solid(map);
-
-
 %%=============================init graph visualization====================
-figure
-set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
-scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
-hold on
 
+%%ramps
 
+    ramp(1).startX = 100;
+    ramp(1).endX = 300;
+    ramp(1).equation = symfun(-()*x + 600, x)
+    ramp(1).slope = diff(ramp(1).equation)
+    
+    ramp(2).startX = 400;
+    ramp(2).endX = 150;
+    ramp(2).equation = symfun(x - 100,x)
+    ramp(2).slope = diff(ramp(2).equation)
+
+    
+    for i = 1:2
+        linspace(ramp,300,()
+    end
+    
 %%=================================Main For===============================
 %% each second is 100 values for t. example: 20 seconds is t=2000
 for t = 0:4000
@@ -43,20 +47,9 @@ for t = 0:4000
     %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
-    
-    %%====================checks if there is a collision==================
-    colX = 0;
-    colY = 0;
-    col_occur = false;
-    
-    [out_of_bounds,colX,colY,col_occur] = detect_collision(position, map, radius);
-    
-    if (out_of_bounds)
-        return %%kills the program if the marble leaves
-    end
-    
-    
     %%==========================collision handling========================
+    
+    
     if(col_occur) %%handles the collision if there was one
         [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = collision_handle(colX, colY, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     else %%otherwise keep gravitational acceleration going
