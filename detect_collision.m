@@ -11,7 +11,12 @@ function [out_of_bounds,forceX,forceY,col_occur] = detect_collision(position, ra
         for j = 1:50
             ytemp = ramp(i,x(j))
             if (ytemp - y(j)) < 1 %arbitrary distance probably pretty small
-
+                %do the collision detected thing
+                col_occur = 1
+                forceX = cos(arctan(1/(ramp(1).slope(x)))
+                forceY = sin(arctan((ramp(1).slope(x)))
+                break
+            end
         end
     end
 end

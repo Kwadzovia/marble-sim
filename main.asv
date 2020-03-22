@@ -27,7 +27,7 @@ force = [0,0,0];
 
     ramp(1).startX = 100;
     ramp(1).endX = 300;
-    ramp(1).equation = symfun(-()*x + 600, x)
+    ramp(1).equation = symfun(-(1)*x + 600, x)
     ramp(1).slope = diff(ramp(1).equation)
     
     ramp(2).startX = 400;
@@ -37,7 +37,7 @@ force = [0,0,0];
 
     
     for i = 1:2
-        linspace(ramp,300,()
+        y(i) = ramp(i).equation(linspace(ramp(i).startX,ramp(i).endX, ramp(i).startX - ramp(i)
     end
     
 %%=================================Main For===============================
@@ -48,6 +48,8 @@ for t = 0:4000
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
     %%==========================collision handling========================
+    
+    
     if(col_occur) %%handles the collision if there was one
         [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = collision_handle(colX, colY, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     else %%otherwise keep gravitational acceleration going

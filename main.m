@@ -27,7 +27,7 @@ force = [0,0,0];
 
     ramp(1).startX = 100;
     ramp(1).endX = 300;
-    ramp(1).equation = symfun(-()*x + 600, x)
+    ramp(1).equation = symfun(-(1)*x + 600, x)
     ramp(1).slope = diff(ramp(1).equation)
     
     ramp(2).startX = 400;
@@ -37,8 +37,12 @@ force = [0,0,0];
 
     
     for i = 1:2
-        linspace(ramp,300,()
+        x(i) = linspace(ramp(i).startX, ramp(i).endX, ramp(i).startX - ramp(i).endX )
+        y(i) = ramp(i).equation(x(i))
+        plot (x(i),y(i)]
+        hold on 
     end
+    
     
 %%=================================Main For===============================
 %% each second is 100 values for t. example: 20 seconds is t=2000
