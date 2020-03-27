@@ -4,7 +4,7 @@ function [out_of_bounds,colX,colY,col_occur] = detect_collision(position, map, r
     col_occur = false;
     colX = 0;
     colY = 0;
-    [x,y] = discreet_cart_circle(position, radius);
+    [x,y] = discreet_cart_circle(position, radius+1);
     
     for i = 1:length(x)
         if x(i) > 0 && x(i) < 602

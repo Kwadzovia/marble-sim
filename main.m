@@ -7,19 +7,22 @@ gravity = -9.806374046543; %%m/s^2
 friction = 0.22;
 mass = 0.02; %%kg
 radius = 5; %%mm
-
+impactF = 1 %%force of initial impact. N
+impactT = 0.1; %%length of initial impact. s
 
 %%=============================initial conditions=========================
     %%(1,1) is the bottome left corner of the plate. 
 position = [110,550,0];
     %%Linear values
 linear_velocity = [0,0,0];
-linear_acceleration = [30,gravity/mass,0];
+linear_acceleration = [0,gravity/mass,0];
     %%angular values
 angular_velocity = [0,0,0];
 angular_acceleration = [0,0,0];
-    %%forces
-force = [0,0,0];
+
+%%function assumes we are traveling to the right
+[linear_acceleration,angular_acceleration,linear_velocity,angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius,impactF,friction);
+
 
 
 %%==============================Map Initialization========================
