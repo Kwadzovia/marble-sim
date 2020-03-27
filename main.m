@@ -28,14 +28,6 @@ map = zeros(600,600);
 map = map_ramp(ramp_list,map);
 [solidX, solidY] = make_solid(map);
 
-
-%%=============================init graph visualization====================
-% figure
-% set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
-% scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
-% hold on
-
-
 %%=============================Simulation Container========================
 position_History = zeros(4000,2);
 
@@ -56,8 +48,10 @@ for t = 0:4000
     
     [out_of_bounds,colX,colY,col_occur] = detect_collision(position, map, radius);
     
+    %%if out of bounds we record the animation and kill the program
     if (out_of_bounds)
-        animation_Output = animation_handler(position_History,radius,0,20,solidX,solidY); %Saves Simulation Animation in a variable
+        %%saves animation in a variable and plays once while doing so.
+        animation_Output = animation_handler(position_History,radius,0,20,solidX,solidY);
         
         figure
         set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
@@ -65,7 +59,9 @@ for t = 0:4000
         xlim([0 600]) %sets axis at 600
         ylim([0 600])
         hold on
-        movie(animation_Output,2,20) % Runs saved animation one time at 20 fps
+        
+        %%uncomment below to see movie at 20fps
+        %%movie(animation_Output,1,20) % Runs saved animation one time at 20 fps
         
         return %%kills the program if the marble leaves
     end
@@ -78,16 +74,6 @@ for t = 0:4000
         linear_acceleration(2) = gravity/mass;
     end
     
-    
-    %%============================display=================================
-    %if mod(t, 5) == 0%%draws the sphere every 5 ticks
-        %draw(position, radius)
-    %end
-    
-    %%uncomment to output to command window
-    %%output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
-    
-    %pause(0.0001) %%done so we can actually see whats happening
 end
 
 function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
