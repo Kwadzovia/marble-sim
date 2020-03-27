@@ -1,24 +1,19 @@
-%impact on a flat surface
+%impact on a flat surface. inputs are linear & angular velocities, impact time, gravity, mass, radius, impact force
+%%returns new linear & angular accelerations 
 
-impact(0,0,0.07,9.81,0.002711,0.0065,1,0.7,0.6)
+function [linAccel,angAccel,linVel,angVel] = impact(linVel,angVel,linAccel,angAccel,impactT,gravity,mass,radius,impactF,friction)
+MOI=(2/5)*mass*radius^2; %%moment of inertia
 
-function [linAccel,angAccel,linVel,angVel] = impact(initLinVel,initAngVel,impactT,gravity,mass,radius,impactF,Ustatic,Ukinetic)
-MOI=(2/5)*mass*radius^2;
-%first assume no slipping:
-Ff=(MOI*impactF)/(MOI-radius^2);
-%check assumption
-if Ff<=Ustatic*mass*gravity %if no slipping
-    linAccel=(impactF-Ff)/mass;
-    angAccel=linAccel/radius;
-else
-    Ff=Ukinetic*mass*gravity; % if slipping
-    linAccel=(impactF-Ff)/mass;
-    angAccel=(-Ff*radius)/MOI;
-end
+%assume no slipping:
+Ff=(MOI*impactF)/(MOI-radius^2);%%force of friction
+
+linAccel(1)=(impactF-Ff)/mass;
+angAccel(1)=linAccel(1)/radius;
+
 %resulting velocities via kinematic equations    
-angVel=initAngVel+angAccel*impactT;
-linVel=initLinVel+linAccel*impactT;
-disp(linAccel);
+angVel(1)=angVel(1)+angAccel(1)*impactT;
+linVel(1)=linVel(1)+linAccel(1)*impactT;
+
 end
 
     
