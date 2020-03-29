@@ -8,10 +8,10 @@ MOI=(2/5)*mass*radius^2; %%moment of inertia
 Ff=(MOI*impactF)/(MOI-radius^2);%%force of friction
 
 linAccel(1)=(impactF-Ff)/mass;
-angAccel(1)=linAccel(1)/radius;
+angAccel(3)=linAccel(1)/radius;
 
 %resulting velocities via kinematic equations    
-angVel(1)=angVel(1)+angAccel(1)*impactT;
+angVel(3)=angVel(3)+angAccel(3)*impactT;
 linVel(1)=linVel(1)+linAccel(1)*impactT;
 
 end

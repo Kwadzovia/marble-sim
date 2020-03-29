@@ -6,7 +6,8 @@ clc; %%clears command window
 gravity = -9.806374046543; %%m/s^2
 friction = 0.22;
 mass = 0.02; %%kg
-radius = 5; %%mm
+radiusmm = 5; %%mm
+radius_m = radiusmm/1000;
 impactF = 1; %%force of initial impact. N
 impactT = 0.1; %%length of initial impact. s
 
@@ -21,10 +22,11 @@ linear_acceleration = [0,gravity/mass,0];
 angular_velocity = [0,0,0];
 angular_acceleration = [0,0,0];
 
-%%function assumes we are traveling to the right
-[linear_acceleration,angular_acceleration,linear_velocity,angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius,impactF,friction);
+    %%inital impact
+[linear_acceleration,angular_acceleration,linear_velocity,angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius_m,impactF,friction);
 
-
+interaction_num = 1;%%determines which object the marble is interacting with
+col_occur_previous = false;
 
 %%==============================Map Initialization========================
 map = zeros(600,600);
@@ -40,10 +42,10 @@ position_History = zeros(4000,2);
 %% each second is 100 values for t. example: 20 seconds is t=2000
 for t = 0:4000
     
-    %%output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
+    output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
     %%updates based on previous conditions
-    [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
+    [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m);
     map_position(1) = int16(position(1));
     map_position(2) = int16(position(2));
     position_History(t+1,1) = map_position(1);
@@ -54,40 +56,46 @@ for t = 0:4000
     colY = 0;
     col_occur = false;
     
-    [out_of_bounds,colX,colY,col_occur] = detect_collision(map_position, map, radius);
+    [out_of_bounds,colX,colY,col_occur] = detect_collision(map_position, map, radiusmm);
     
     %%if out of bounds we record the animation and kill the program
     if (out_of_bounds)
-        %%saves animation in a variable and plays once while doing so.
-        animation_Output = animation_handler(position_History,radius,0,20,solidX,solidY);
-        
-        figure
-        set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
-        scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
-        xlim([0 600]) %sets axis at 600
-        ylim([0 600])
-        hold on
-        
-        %%uncomment below to see movie at 20fps
-        %%movie(animation_Output,1,20) % Runs saved animation one time at 20 fps
-        
-        return %%kills the program if the marble leaves
+        break %%exits main for loop
     end
     
-    
+    angular_acceleration = [0,0,0];
     %%==========================collision handling========================
     if(col_occur) %%handles the collision if there was one
-        [angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, ramp, angular_acceleration, linear_acceleration);
+        if(~col_occur_previous)
+            linear_velocity(2) = 0;
+        end
+        col_occur_previous = true;
+        [angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, radius_m, ramp_list(interaction_num), angular_acceleration, linear_acceleration);
     else %%otherwise keep gravitational acceleration going
-        linear_acceleration(2) = gravity/mass;
+        col_occur_previous = false;
+        linear_acceleration = [0,(gravity/mass),0];
     end
 end
+
+%%===========================animation=====================================
+    %%saves animation in a variable and plays once while doing so.
+animation_Output = animation_handler(position_History,radiusmm,0,20,solidX,solidY);
+        
+figure
+set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
+scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
+xlim([0 600]) %sets axis at 600
+ylim([0 600])
+hold on
+        
+    %%uncomment below to see movie at 20fps
+    %%movie(animation_Output,1,20) % Runs saved animation one time at 20 fps
 
 function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration)
     fprintf("t= " + t/10 + ", x= " + position(1) + ", y= " + position(2))
     fprintf(", xVelLin= " + linear_velocity(1) + ", yVelLin= " + linear_velocity(2))
     fprintf(", xAccelLin= " + linear_acceleration(1) + ", yAccelLin= " + linear_acceleration(2))
-    fprintf(", xVelANG= " + angular_velocity(1)+ ", yVelANG= " + angular_velocity(2))
-    fprintf(", xAccelANG= " + angular_acceleration(1) + ", yAccelANG = " + angular_acceleration(2))
+    fprintf(", VelANG= " + angular_velocity(3))
+    fprintf(", AccelANG= " + angular_acceleration(3))
     fprintf(newline)
 end

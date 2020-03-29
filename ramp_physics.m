@@ -1,16 +1,22 @@
 %%calculates the acceleration on the marble when on a ramp.
-function [angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, ramp,angular_acceleration, linear_acceleration)
+function [angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, radius, ramp,angular_acceleration, linear_acceleration)
 
-deltaX = abs(ramp.startX - ramp.endY);
-deltaY = abs(ramp.startY - ramp.endY);
-length = (deltaX^2 + deltaY^2)^(1/2);
-theta = acos(-(deltaY^2-deltaX^2-length^2)/(2*deltaY*length));
+    deltaX = abs(ramp.startX - ramp.endX);
+    deltaY = abs(ramp.startY - ramp.endY);
+    length = (deltaX^2 + deltaY^2)^(1/2);
 
-sinT = sin(theta);
-mg = mass*gravity;
-mr = mass*radius;
+    if(deltaX ~= 0 && deltaY ~= -0)
+        theta = acos(-(deltaY^2-deltaX^2-length^2)/(2*deltaY*length));
+    else
+        theta = 0;
+    end
 
+    sinT = sin(theta);
+    mg = mass*gravity;
+    mr = mass*radius;
+    mgsinT = sinT*mg;
 
-angular_acceleration(3) = angular_acceleration(3) + -sinT*mg/(mr-2/5mr*radius);
-linear_acceleration(1) = linear_acceleration(1) + cos(theta)*-sinT*mg/(mass-2/5*mr);
-linear_acceleration(2) = linear_acceleration(2) + sinT*-sinT*mg/(mass-2/5*mr);
+    angular_acceleration(3) =  -mgsinT/(mr-2/5*mr*radius);
+    linear_acceleration(1) = cos(theta)*-mgsinT/(mass-2/5*mr);
+    linear_acceleration(2) = sinT*-mgsinT/(mass-2/5*mr);
+end

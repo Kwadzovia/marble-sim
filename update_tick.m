@@ -1,6 +1,6 @@
 %%This updates position, velocity, and acceleration based on values from
 %%last tick.
-function [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration)
+function [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius)
 
     time_division_factor = 100;
 
@@ -12,14 +12,14 @@ function [position, linear_velocity, linear_acceleration, angular_velocity, angu
         position(1) = position(1) + linear_velocity(1)/time_division_factor; %%divide by 10 because of our time interval
     end
 
-    if angular_acceleration(2) ~= 0 %%if y angular acceleration is not zero then add that acceleration to y angular velocity
-        angular_velocity(2) = angular_velocity(2) + angular_acceleration(2)/time_division_factor; %%divide by 10 because of our time interval
+    if angular_acceleration(3) ~= 0 %%if y angular acceleration is not zero then add that acceleration to y angular velocity
+        angular_velocity(3) = angular_velocity(3) + angular_acceleration(3)/time_division_factor;%%divide by 10 because of our time interval
     end
-
-    if angular_acceleration(1) ~= 0 %%if x angular acceleration is not zero then add that acceleration to x angular velocity
-        angular_velocity(1) = angular_velocity(1) + angular_acceleration(1)/time_division_factor; %%divide by 10 because of our time interval
+    
+    if (angular_velocity(3) ~= 0 && col_occur)
+        linear_velocity(1) = angular_velocity(3)/radius/time_division_factor;
     end
-
+    
     if linear_acceleration(2) ~= 0 %%if y linear acceleration is not zero then add that acceleration to y linear velocity
         linear_velocity(2) = linear_velocity(2) + linear_acceleration(2)/time_division_factor; %%divide by 10 because of our time interval
     end
