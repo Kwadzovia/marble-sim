@@ -7,7 +7,7 @@ gravity = -9.806374046543; %%m/s^2
 friction = 0.22;
 mass = 0.02; %%kg
 radius = 5; %%mm
-impactF = 1 %%force of initial impact. N
+impactF = 1; %%force of initial impact. N
 impactT = 0.1; %%length of initial impact. s
 
 %%=============================initial conditions=========================
@@ -77,7 +77,7 @@ for t = 0:4000
     
     %%==========================collision handling========================
     if(col_occur) %%handles the collision if there was one
-        [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = collision_handle(colX, colY, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
+        [angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, ramp, angular_acceleration, linear_acceleration);
     else %%otherwise keep gravitational acceleration going
         linear_acceleration(2) = gravity/mass;
     end
