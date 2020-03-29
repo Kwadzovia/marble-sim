@@ -11,8 +11,9 @@ impactF = 1 %%force of initial impact. N
 impactT = 0.1; %%length of initial impact. s
 
 %%=============================initial conditions=========================
-    %%(1,1) is the bottome left corner of the plate. 
+    %%(1,1) is the bottom left corner of the plate.
 position = [110,550,0];
+map_position = position;
     %%Linear values
 linear_velocity = [0,0,0];
 linear_acceleration = [0,gravity/mass,0];
@@ -39,17 +40,21 @@ position_History = zeros(4000,2);
 %% each second is 100 values for t. example: 20 seconds is t=2000
 for t = 0:4000
     
+    %%output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
+    
     %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
-    position_History(t+1,1) = position(1);
-    position_History(t+1,2) = position(2);
+    map_position(1) = int16(position(1));
+    map_position(2) = int16(position(2));
+    position_History(t+1,1) = map_position(1);
+    position_History(t+1,2) = map_position(2);
     
     %%====================checks if there is a collision==================
     colX = 0;
     colY = 0;
     col_occur = false;
     
-    [out_of_bounds,colX,colY,col_occur] = detect_collision(position, map, radius);
+    [out_of_bounds,colX,colY,col_occur] = detect_collision(map_position, map, radius);
     
     %%if out of bounds we record the animation and kill the program
     if (out_of_bounds)
@@ -76,15 +81,13 @@ for t = 0:4000
     else %%otherwise keep gravitational acceleration going
         linear_acceleration(2) = gravity/mass;
     end
-    
 end
 
-function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, force)
+function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration)
     fprintf("t= " + t/10 + ", x= " + position(1) + ", y= " + position(2))
     fprintf(", xVelLin= " + linear_velocity(1) + ", yVelLin= " + linear_velocity(2))
     fprintf(", xAccelLin= " + linear_acceleration(1) + ", yAccelLin= " + linear_acceleration(2))
     fprintf(", xVelANG= " + angular_velocity(1)+ ", yVelANG= " + angular_velocity(2))
     fprintf(", xAccelANG= " + angular_acceleration(1) + ", yAccelANG = " + angular_acceleration(2))
-    fprintf(", xForce = " + force(1) + ", yForce= " + force(2))
     fprintf(newline)
 end
