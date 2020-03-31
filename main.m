@@ -30,13 +30,18 @@ col_occur_previous = false;
 
 %%==============================Map Initialization========================
 map = zeros(600,600);
-[ramp_list] = ramp_list();
-map = map_ramp(ramp_list,map);
+[ramp_listvar] = ramp_list();
+map = map_ramp(ramp_listvar,map);
 [solidX, solidY] = make_solid(map);
 
 %%=============================Simulation Container========================
 position_History = zeros(4000,2);
 
+
+
+
+%%=============================Misc Declarations==========================
+col_occur = false;
 
 %%=================================Main For===============================
 %% each second is 100 values for t. example: 20 seconds is t=2000
@@ -55,8 +60,8 @@ for t = 0:4000
     colX = 0;
     colY = 0;
     col_occur = false;
-    
-    [out_of_bounds,colX,colY,col_occur] = detect_collision(map_position, map, radiusmm);
+    collision_position = [];
+    [out_of_bounds,collision_position,col_occur] = detect_collision(map_position, ramp_listvar, radiusmm);
     
     %%if out of bounds we record the animation and kill the program
     if (out_of_bounds)
@@ -83,10 +88,31 @@ animation_Output = animation_handler(position_History,radiusmm,0,20,solidX,solid
         
 figure
 set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
-scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
+%%scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
+
+intervals = 200
+thickness = 2
+a = [0:0.1:2*pi];
+circle_x = cos(a);
+circle_y = sin(a);
+grid on
+axis('square')
 xlim([0 600]) %sets axis at 600
 ylim([0 600])
 hold on
+
+for i = 1:1:length(ramp_list)
+ramp_list_x = linspace(ramp_list(i).startX,ramp_list(i).endX,intervals);
+ramp_list_y = linspace(ramp_list(i).startY,ramp_list(i).endY,intervals);
+
+for j=1:1:intervals
+    patch(ramp_list_x(j)+thickness*circle_x,ramp_list_y(j)+thickness*circle_y,'g')
+end
+
+end
+hold on
+
+
         
     %%uncomment below to see movie at 20fps
     %%movie(animation_Output,1,20) % Runs saved animation one time at 20 fps

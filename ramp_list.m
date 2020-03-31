@@ -1,7 +1,7 @@
 %%returns a list of all ramps in the map. Each ramp contains a list of
 %%start and end positions, and friction
 function [list] = ramp_list()
-
+    
     %%ramp 1
     ramp(1).startX = 10;
     ramp(1).startY = 500;
