@@ -34,31 +34,56 @@ map = zeros(600,600);
 map = map_ramp(ramp_listvar,map);
 [solidX, solidY] = make_solid(map);
 
-%%=============================Simulation Container========================
-position_History = zeros(4000,2);
-
-
 
 
 %%=============================Misc Declarations==========================
 col_occur = false;
 
+
+
+seli_window = figure;
+intervals = 200;
+thickness = 2;
+a = [0:0.1:2*pi];
+circle_x = cos(a);
+circle_y = sin(a);
+grid on
+axis('square')
+xlim([0 600]) %sets axis at 600
+ylim([0 600])
+hold on
+time_handle = text(450,550,strcat(num2str(0,'%.2f')," "," seconds"));
+marble = patch(position(1)+radiusmm*circle_x , position(2)+radiusmm*circle_y,'b');
+
+intervals = 200;
+thickness = 2;
+
+animation_output = [];
+
+%%Plot ramps
+for i = 1:1:length(ramp_listvar)
+ramp_list_x = linspace(ramp_listvar(i).startX,ramp_listvar(i).endX,intervals);
+ramp_list_y = linspace(ramp_listvar(i).startY,ramp_listvar(i).endY,intervals);
+
+    for j=1:1:intervals
+        patch(ramp_list_x(j)+thickness*circle_x,ramp_list_y(j)+thickness*circle_y,'g')
+    end
+
+end
+
+
 %%=================================Main For===============================
 %% each second is 100 values for t. example: 20 seconds is t=2000
 for t = 0:4000
     
-    output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
+    %output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
     %%updates based on previous conditions
     [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m);
     map_position(1) = int16(position(1));
     map_position(2) = int16(position(2));
-    position_History(t+1,1) = map_position(1);
-    position_History(t+1,2) = map_position(2);
     
     %%====================checks if there is a collision==================
-    colX = 0;
-    colY = 0;
     col_occur = false;
     collision_position = [];
     [out_of_bounds,collision_position,col_occur] = detect_collision(map_position, ramp_listvar, radiusmm);
@@ -75,47 +100,24 @@ for t = 0:4000
             linear_velocity(2) = 0;
         end
         col_occur_previous = true;
-        [angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, radius_m, ramp_list(interaction_num), angular_acceleration, linear_acceleration);
+        [angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, radius_m, ramp_listvar(interaction_num), angular_acceleration, linear_acceleration);
     else %%otherwise keep gravitational acceleration going
         col_occur_previous = false;
         linear_acceleration = [0,(gravity/mass),0];
     end
+    %%append individual animation frame to total video
+    animation_output = update_frame(t,position,radiusmm,circle_x,circle_y,marble,seli_window,time_handle,animation_output);
 end
 
 %%===========================animation=====================================
-    %%saves animation in a variable and plays once while doing so.
-animation_Output = animation_handler(position_History,radiusmm,0,20,solidX,solidY);
-        
-figure
-set(gcf, 'Position',  [1, 1, 600, 600]) %sets graph window size and position
-%%scatter(solidX,solidY) %%needed to be scatter so it doesn't try connecting different objects
+%%Uncomment below to play a saved animation once (at 20fps)
 
-intervals = 200
-thickness = 2
-a = [0:0.1:2*pi];
-circle_x = cos(a);
-circle_y = sin(a);
-grid on
-axis('square')
-xlim([0 600]) %sets axis at 600
-ylim([0 600])
-hold on
+% replay_window = figure;
+% axis('square')
+% xlim([0 600]) %sets axis at 600
+% ylim([0 600])
+% movie(replay_window,animation_output,1,20)  
 
-for i = 1:1:length(ramp_list)
-ramp_list_x = linspace(ramp_list(i).startX,ramp_list(i).endX,intervals);
-ramp_list_y = linspace(ramp_list(i).startY,ramp_list(i).endY,intervals);
-
-for j=1:1:intervals
-    patch(ramp_list_x(j)+thickness*circle_x,ramp_list_y(j)+thickness*circle_y,'g')
-end
-
-end
-hold on
-
-
-        
-    %%uncomment below to see movie at 20fps
-    %%movie(animation_Output,1,20) % Runs saved animation one time at 20 fps
 
 function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration)
     fprintf("t= " + t/10 + ", x= " + position(1) + ", y= " + position(2))
