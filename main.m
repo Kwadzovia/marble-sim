@@ -1,9 +1,11 @@
 %%A simulation to simulate a marble rolling down a track for MSE 222
 
 clc; %%clears command window
-        
+clear all;
+close all;
+
 %%================================constants================================
-gravity = -9.806374046543; %%m/s^2
+gravity = -980.6374046543; %%cm/s^2
 friction = 0.22;
 mass = 0.02; %%kg
 radiusmm = 5; %%mm
@@ -16,23 +18,23 @@ impactT = 0.1; %%length of initial impact. s
 position = [110,550,0];
 map_position = position;
     %%Linear values
-linear_velocity = [0,0,0];
-linear_acceleration = [0,gravity/mass,0];
+linear_velocity = [50,0,0];
+linear_acceleration = [0,gravity,0];
     %%angular values
 angular_velocity = [0,0,0];
 angular_acceleration = [0,0,0];
 
-    %%inital impact
-[linear_acceleration,angular_acceleration,linear_velocity,angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius_m,impactF,friction);
+%%inital impact
+%%[linear_acceleration,angular_acceleration,linear_velocity,angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius_m,impactF,friction);
 
 interaction_num = 1;%%determines which object the marble is interacting with
 col_occur_previous = false;
 
 %%==============================Map Initialization========================
-map = zeros(600,600);
+%map = zeros(600,600);
 [ramp_listvar] = ramp_list();
-map = map_ramp(ramp_listvar,map);
-[solidX, solidY] = make_solid(map);
+%map = map_ramp(ramp_listvar,map);
+%[solidX, solidY] = make_solid(map);
 
 
 
@@ -41,9 +43,7 @@ col_occur = false;
 
 
 
-seli_window = figure;
-intervals = 200;
-thickness = 2;
+anim_window = figure;
 a = [0:0.1:2*pi];
 circle_x = cos(a);
 circle_y = sin(a);
@@ -55,10 +55,11 @@ hold on
 time_handle = text(450,550,strcat(num2str(0,'%.2f')," "," seconds"));
 marble = patch(position(1)+radiusmm*circle_x , position(2)+radiusmm*circle_y,'b');
 
-intervals = 200;
-thickness = 2;
+intervals = 80;
+thickness = 5;
 
 animation_output = [];
+timestep = 0.01;
 
 %%Plot ramps
 for i = 1:1:length(ramp_listvar)
@@ -73,20 +74,20 @@ end
 
 
 %%=================================Main For===============================
-%% each second is 100 values for t. example: 20 seconds is t=2000
-for t = 0:4000
+for t = 0:timestep:20
     
     %output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
     %%updates based on previous conditions
-    [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m);
-    map_position(1) = int16(position(1));
-    map_position(2) = int16(position(2));
-    
+    [position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(timestep,position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m);
+    animation_output = update_frame(t,position,radiusmm,circle_x,circle_y,marble,anim_window,time_handle,animation_output);
+    %     map_position(1) = int16(position(1));
+%     map_position(2) = int16(position(2));
+%     
     %%====================checks if there is a collision==================
     col_occur = false;
     collision_position = [];
-    [out_of_bounds,collision_position,col_occur] = detect_collision(map_position, ramp_listvar, radiusmm);
+    [out_of_bounds,collision_position,col_occur] = detect_collision(position, ramp_listvar, radiusmm, intervals, thickness);
     
     %%if out of bounds we record the animation and kill the program
     if (out_of_bounds)
@@ -96,17 +97,17 @@ for t = 0:4000
     angular_acceleration = [0,0,0];
     %%==========================collision handling========================
     if(col_occur) %%handles the collision if there was one
-        if(~col_occur_previous)
-            linear_velocity(2) = 0;
-        end
+        linear_velocity(2) = 0;
         col_occur_previous = true;
-        [angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, radius_m, ramp_listvar(interaction_num), angular_acceleration, linear_acceleration);
-    else %%otherwise keep gravitational acceleration going
-        col_occur_previous = false;
-        linear_acceleration = [0,(gravity/mass),0];
+        %[angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, radius_m, ramp_listvar(interaction_num), angular_acceleration, linear_acceleration);
+%     else %%otherwise keep gravitational acceleration going
+%         col_occur_previous = false;
+%         linear_acceleration = [0,(gravity/mass),0];
+    else
+        continue
     end
     %%append individual animation frame to total video
-    animation_output = update_frame(t,position,radiusmm,circle_x,circle_y,marble,seli_window,time_handle,animation_output);
+    
 end
 
 %%===========================animation=====================================

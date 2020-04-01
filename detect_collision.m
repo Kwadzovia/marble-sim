@@ -1,10 +1,8 @@
 %%detects if the sphere is in contact with a surface.
-function [out_of_bounds,collision_pos,col_occur] = detect_collision(position, ramp_listvar, radius)
+function [out_of_bounds,collision_pos,col_occur] = detect_collision(position, ramp_listvar, radius, intervals, thickness)
     out_of_bounds = false;
     col_occur = false;
     
-    intervals = 200;
-    thickness = 2;
     collision_pos = [];
     for i = 1:1:length(ramp_listvar)
     ramp_list_x = linspace(ramp_listvar(i).startX,ramp_listvar(i).endX,intervals);
@@ -33,9 +31,6 @@ function [out_of_bounds,collision_pos,col_occur] = detect_collision(position, ra
         return
     end
     
-    if position(2) < 501
-        pause(1)
-    end
     for j = 1:1:intervals
         if norm([ramp_list_x(j)-position(1) ramp_list_y(j)-position(2)]) <= thickness+radius    
             col_occur = true;

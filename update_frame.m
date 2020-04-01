@@ -5,7 +5,7 @@ function [frame_container] = update_frame(time,position,radius,circle_x,circle_y
 
    
    %update Time
-   set(time_handle,'String',strcat(num2str(time/10,'%.2f')," "," seconds"))
+   set(time_handle,'String',strcat(num2str(time,'%.2f')," "," seconds"))
    
    %%Save Frame   
    f = getframe(figure_handle);
