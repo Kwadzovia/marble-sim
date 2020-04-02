@@ -13,38 +13,34 @@ radius_m = radiusmm/1000;
 impactF = 1; %%force of initial impact. N
 impactT = 0.1; %%length of initial impact. s
 marble_angle = 0;
-coeff_restitution = 0.5;
+coeff_restitution = 0.1;
 %%=============================initial conditions=========================
 %%(1,1) is the bottom left corner of the plate.
-old_position = [];
-position = [550,530];
+old_position = [0 0];
+old_linear_velocity = [0 0];
+position = [30,radiusmm+550];
 map_position = position;
 %%Linear values
-linear_velocity = [150,0];
+linear_velocity = [0,0];
 linear_acceleration = [0,gravity];
 %%angular values
 angular_velocity = 0;
 angular_acceleration = 0;
 
 %%inital impact
-%%[linear_acceleration,angular_acceleration,linear_velocity,angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius_m,impactF,friction);
-
+[linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius_m,impactF,friction,coeff_restitution);
 interaction_num = 1;%%determines which object the marble is interacting with
 col_occur_previous = false;
 
 %%==============================Map Initialization========================
-%map = zeros(600,600);
 ramp_listvar = ramp_list();
-%map = map_ramp(ramp_listvar,map);
-%[solidX, solidY] = make_solid(map);
-
-
-
 %%=============================Misc Declarations==========================
 col_occur = false;
-
-
-
+animation_output = [];
+current_time = 0;
+stop_running = false;
+fps = 20;
+%%=============================Window Setup===============================
 anim_window = figure;
 a = [0:0.1:2*pi];
 circle_x = cos(a);
@@ -54,14 +50,9 @@ axis('square')
 xlim([0 600]) %sets axis at 600
 ylim([0 600])
 hold on
+set(gcf, 'Position', get(0, 'Screensize')); %Fullscreen
 time_handle = text(450,550,strcat(num2str(0,'%.2f')," "," seconds"));
 
-
-intervals = 100;
-thickness = 5;
-
-animation_output = [];
-timestep = 0.01;
 
 %%Plot ramps
 for i = 1:1:length(ramp_listvar)
@@ -69,12 +60,16 @@ for i = 1:1:length(ramp_listvar)
     line([current_ramp(:,1)],[current_ramp(:,2)])
 end
 
-fps = 20;
-tic
-current_time = 0;
-stop_running = false;
+
+%%Used in https://www.mathworks.com/matlabcentral/fileexchange/27900-ball-bounce-physics-with-spin?focused=5155060&tab=function
+%%Stop Button for Window
+h_stop = uicontrol('Position',[15 340 80 30],'Style','pushbutton','String','Stop','Callback',...
+    'stop_running=~stop_running;if stop_running,set(h_stop,''String'',''Restart'');,else,set(h_stop,''String'',''Stop'');main;,end');
+
+%Start Timer for fps
+tic 
 %%=================================Main For===============================
-while ~stop_running %%Runs forever, kinda buggy but can be fixed later
+while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     
     %output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     marble = rectangle('Position', [position-[radiusmm radiusmm] radiusmm*2 radiusmm*2], 'Curvature', [1 1]);
@@ -84,25 +79,32 @@ while ~stop_running %%Runs forever, kinda buggy but can be fixed later
     halfline = line([p1(1) p2(1)], [p1(2) p2(2)], 'Color', 'k');
     %%updates based on previous conditions
     current_time = current_time + 1/fps;
-    [old_position, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(fps,position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m);
+
+    [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(fps,position,marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radiusmm);
     animation_output = update_frame(current_time,position,radiusmm,circle_x,circle_y,anim_window,time_handle,animation_output);
     
+    if abs((linear_velocity(2)-old_linear_velocity(2))*100/old_linear_velocity(2)) < 5 && col_occur_previous
+        %Rolling??
+        is_rolling = true;
+    else
+        is_rolling = false;
+    end
+    old_linear_velocity = linear_velocity;
+
     drawnow
     wait_time = 1/fps - toc;
     if wait_time > 0, pause(wait_time); end
     tic
     delete(marble)
     delete(halfline)
-    %     map_position(1) = int16(position(1));
-    %     map_position(2) = int16(position(2));
-    %
+
     %%====================checks if there is a collision==================
     col_occur = false;
     collision_position = [];
     out_of_bounds = false;
     
     for j = 1 : length(ramp_listvar)
-        %%True Collision Tests
+        %%Collision Tests
         %%Find normal vector
         current_surface = ramp_listvar{j};
         normal = [current_surface(2,2)-current_surface(1,2) current_surface(1,1)-current_surface(2,1)];
@@ -114,48 +116,56 @@ while ~stop_running %%Runs forever, kinda buggy but can be fixed later
         edge_old_pos = old_position + edge_offset;
         edge_pos = position + edge_offset;
         
-        %templine = line([old_position(1) position(1)],[old_position(2) position(2)]);
-        %templine = line([edge_old_pos(1) edge_pos(1)],[edge_old_pos(2) edge_pos(2)]);
-        %delete(templine)
-        [col_occur,collision_position] = detect_collision(old_position,position,current_surface(1,:),current_surface(2,:));
+
+        [col_occur,collision_position] = detect_collision(edge_old_pos,edge_pos,current_surface(1,:),current_surface(2,:));
         
         if col_occur
             %%Readjustment based on collision physics
             old_linear_velocity = linear_velocity;
             overshoot = edge_pos - collision_position;
             
-            %Shows where marble would go if there was no collision
-            templine = line([edge_old_pos(1) edge_pos(1)],[edge_old_pos(2) edge_pos(2)]);
-            marble = rectangle('Position', [position-[radiusmm radiusmm] radiusmm*2 radiusmm*2], 'Curvature', [1 1]);
+            %%These lines Show where marble would go if there was no collision
+%              templine = line([edge_old_pos(1) edge_pos(1)],[edge_old_pos(2) edge_pos(2)]);
+%              marble = rectangle('Position', [position-[radiusmm radiusmm] radiusmm*2 radiusmm*2], 'Curvature', [1 1]);
             
-            
-            
-            %%Physics Calculations
-            [linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius_m,impactF,friction,coeff_restitution);
             
             
             %angular_acceleration = [0,0];
-            %%==========================Collision Physics========================
+            %%==========================Collision Handling========================
             %%handles the collision if there was one
-            %%Treat as if collision at collision_position
+            %%Treat as if collision at collision_position when rolling
             col_occur_previous = true;
-            %[angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, radius_m, ramp_listvar(interaction_num), angular_acceleration, linear_acceleration);
-            %     else %%otherwise keep gravitational acceleration going
-            %         col_occur_previous = false;
-            %         linear_acceleration = [0,(gravity/mass),0];
+            
+            %% Impact Physics
+                if ~is_rolling
+                    old_angular_velocity = angular_velocity;
+                    old_linear_velocity = linear_velocity;
+                    angular_velocity = 5*(linear_velocity(1)-2/5*old_angular_velocity*radius_m)/(7*radius_m);
+                    linear_velocity(2) = -coeff_restitution*linear_velocity(2);
+
+                    linear_velocity(1) = 5/7*(linear_velocity(1)-2/5*old_angular_velocity*radius_m);
+                    angular_acceleration=linear_acceleration(1)/radius_m;
+                else
+                %% Rolling Physics
+                    %[angular_acceleration, linear_acceleration] = ramp_physics(mass, gravity, radius_m, ramp,angular_acceleration, linear_acceleration)
+                    
+                    %Replace this with actual rolling equations
+                    angular_velocity = 5*(linear_velocity(1)-2/5*old_angular_velocity*radius_m)/(7*radius_m);
+                    linear_velocity(2) = -coeff_restitution*linear_velocity(2);
+                end
+            
+            
             
             %%Marble Readjusted to account for collision
             overshoot = linear_velocity * norm(overshoot)/norm(old_linear_velocity);
             position = collision_position + overshoot - edge_offset;
-            marble = rectangle('Position', [position-[radiusmm radiusmm] radiusmm*2 radiusmm*2], 'Curvature', [1 1],'EdgeColor','g'); %Where the marble is after readjustment
-        else
-            col_occur_previous = true;
+%             marble = rectangle('Position', [position-[radiusmm radiusmm] radiusmm*2 radiusmm*2], 'Curvature', [1 1],'EdgeColor','g'); %Where the marble is after readjustment
         end
-        %delete(templine)
     end
 end
 
 %%===========================animation=====================================
+%%No Idea if this works anymore
 %%Uncomment below to play a saved animation once (at 20fps)
 
 % replay_window = figure;

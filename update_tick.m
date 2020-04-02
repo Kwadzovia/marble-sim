@@ -1,30 +1,27 @@
 %%This updates position, velocity, and acceleration based on values from
 %%last tick.
-function [old_position, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(fps,position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius)
+function [ old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(fps,position,marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius)
+
+        %%time is 1/fps
 
         old_position = position;
         
-        if ~col_occur
-            position(2) = position(2) + linear_velocity(2)*1/fps + 0.5*linear_acceleration(2)*(1/fps)^2; %%divide by 10 because of our time interval
-        end
+
+        position(2) = position(2) + linear_velocity(2)*1/fps + 0.5*linear_acceleration(2)*(1/fps)^2; 
+
         
-        position(1) = position(1) + linear_velocity(1)*1/fps + 0.5*linear_acceleration(1)*(1/fps)^2; %%divide by 10 because of our time interval
+        position(1) = position(1) + linear_velocity(1)*1/fps + 0.5*linear_acceleration(1)*(1/fps)^2;
 
+        marble_angle = marble_angle + angular_velocity/fps + 0.5*angular_acceleration*(1/fps)^2;
 
+        %angular_velocity = angular_velocity+ angular_acceleration;
+        %linear_velocity(1) = angular_velocity(3)/radius;
+  
 
-        %angular_velocity(3) = angular_velocity(3) + angular_acceleration(3)/timestep;%%divide by 10 because of our time interval
+       linear_velocity(2) = linear_velocity(2) + linear_acceleration(2)*1/fps;
 
-    
-
-        %linear_velocity(1) = angular_velocity(3)/radius/timestep;
-
-    
-        if ~col_occur
-            linear_velocity(2) = linear_velocity(2) + linear_acceleration(2)*1/fps; %%divide by 10 because of our time interval
-        end
-
-
-        linear_velocity(1) = linear_velocity(1) + linear_acceleration(1)*1/fps; %%divide by 10 because of our time interval
+       linear_velocity(1) = linear_velocity(1) + linear_acceleration(1)*1/fps;
+       
 
     
 end
