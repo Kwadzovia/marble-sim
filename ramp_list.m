@@ -1,7 +1,16 @@
 %%returns a list of all ramps in the map. Each ramp contains a list of
 %%start and end positions, and friction
-function [list] = ramp_list()
+function output_list = ramp_list()
     
+    output_list = {[10 500; 500 500],...
+         [590 480; 20 460],...
+         [10 440; 580 400],...
+         [10 300; 580 280],...
+         [590 260; 20 220],...
+         [10 200; 580 150],...
+         [590 100; 10 50],...
+         [10 30; 690 1]};
+     
     %%ramp 1
     ramp(1).startX = 10;
     ramp(1).startY = 500;
@@ -58,7 +67,7 @@ function [list] = ramp_list()
     ramp(8).endY = 1;
     ramp(8).friction = 0;
     
-    for i = 1:length(ramp)
-        list(i) = ramp(i);
-    end
+%     for i = 1:length(ramp)
+%         list(i) = ramp(i);
+%     end
 end

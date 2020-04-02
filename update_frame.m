@@ -1,9 +1,4 @@
-function [frame_container] = update_frame(time,position,radius,circle_x,circle_y,marble_handle,figure_handle,time_handle,frame_container)    
-   %%Plot ball
-   set(marble_handle,'XData',position(1)+radius*circle_x,'YData',position(2)+radius*circle_y)
-   
-
-   
+function [frame_container] = update_frame(time,position,radius,circle_x,circle_y,figure_handle,time_handle,frame_container)    
    %update Time
    set(time_handle,'String',strcat(num2str(time,'%.2f')," "," seconds"))
    
