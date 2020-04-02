@@ -13,13 +13,14 @@ radius_m = radiusmm/1000;
 impactF = 1; %%force of initial impact. N
 impactT = 0.1; %%length of initial impact. s
 marble_angle = 0;
+coeff_restitution = 0.5;
 %%=============================initial conditions=========================
 %%(1,1) is the bottom left corner of the plate.
 old_position = [];
-position = [110,550];
+position = [550,530];
 map_position = position;
 %%Linear values
-linear_velocity = [50,0];
+linear_velocity = [150,0];
 linear_acceleration = [0,gravity];
 %%angular values
 angular_velocity = 0;
@@ -130,10 +131,10 @@ while ~stop_running %%Runs forever, kinda buggy but can be fixed later
             
             
             %%Physics Calculations
-            [linear_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius_m,impactF,friction);
+            [linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius_m,impactF,friction,coeff_restitution);
             
             
-            angular_acceleration = [0,0];
+            %angular_acceleration = [0,0];
             %%==========================Collision Physics========================
             %%handles the collision if there was one
             %%Treat as if collision at collision_position
