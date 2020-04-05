@@ -19,11 +19,11 @@ coeff_restitution = 0.1;
 %%(1,1) is the bottom left corner of the plate.
 old_position = [0 0];
 old_linear_velocity = [0 0];
-position = [100,550];
+position = [400,550];
 map_position = position;
 %%Linear values
 linear_velocity = [0,0];
-linear_acceleration = [0,gravity];
+linear_acceleration = [0,gravity_m];
 %%angular values
 angular_velocity = 0;
 angular_acceleration = 0;
@@ -43,6 +43,7 @@ stop_running = false;
 fps = 50;
 time = 0;
 collided_ramp = 0;
+impacted = 0;
 %%=============================Window Setup===============================
 anim_window = figure;
 a = [0:0.1:2*pi];
@@ -76,9 +77,9 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     
     while ~col_occur
         
-        [linear_acceleration,angular_acceleration ] = freefall(linear_acceleration,angular_acceleration,gravity);
-        [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
-        [time] = update_frame(time,fps,time_handle,animation_output,radiusmm,marble_angle,position);
+        [linear_acceleration,angular_acceleration ] = freefall(linear_acceleration,angular_acceleration,gravity_m);
+        [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
+        [time] = update_frame(time,fps,time_handle,animation_output,radius_m,marble_angle,position);
         
         for j = 1 : length(ramp_listvar)
             %%Collision Tests
@@ -112,7 +113,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
                 
                 if collided_ramp == 5; %Flat ramp where we use 1 N force
                     pause(1)
-                    [linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity,mass,radius_m,impactF,friction,coeff_restitution);
+                    [impacted,linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = ImpactOnAFlatSurface(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,impactT,gravity_m,mass,radius_m,impactF,friction,coeff_restitution);
                 end
                 
                 break
@@ -123,7 +124,11 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     
     
     
-    [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radiusmm,ramp_list,collided_ramp);
+    [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
+    if impacted == 1
+       linear_acceleration(1)=(-friction)/mass;
+       impacted = 0;
+    end
     [time] = update_frame(time,fps,time_handle,animation_output,radiusmm,marble_angle,position);
     
     
