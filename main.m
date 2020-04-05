@@ -19,7 +19,7 @@ coeff_restitution = 0.1;
 %%(1,1) is the bottom left corner of the plate.
 old_position = [0 0];
 old_linear_velocity = [0 0];
-position = [400,550];
+position = [11,591];
 map_position = position;
 %%Linear values
 linear_velocity = [0,0];
@@ -54,7 +54,7 @@ axis('square')
 xlim([0 600]) %sets axis at 600
 ylim([0 600])
 hold on
-set(gcf, 'Position', get(0, 'Screensize')); %Fullscreen
+%%set(gcf, 'Position', get(0, 'Screensize')); %Fullscreen
 time_handle = text(450,550,strcat(num2str(0,'%.2f')," "," seconds"));
 
 
@@ -120,7 +120,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
             end
         end
     end
-    output_to_cmd(time, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
+    %%output_to_cmd(time, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
     
     
