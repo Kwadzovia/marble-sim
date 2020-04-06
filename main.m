@@ -45,6 +45,20 @@ time = 0;
 collided_ramp = 0;
 impacted = 0;
 wheel_past = 0;
+
+%%=============================Stats Setup===============================
+time_axis = [];
+position_stats_x = [];
+position_stats_y = [];
+
+velocity_stats_x = [];
+velocity_stats_y = [];
+
+acceleration_stats_x = [];
+acceleration_stats_y = [];
+
+angular_velocity_stats = [];
+angular_acceleration_stats = [];
 %%=============================Window Setup===============================
 anim_window = figure;
 a = [0:0.1:2*pi];
@@ -89,6 +103,40 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
         [linear_acceleration,angular_acceleration ] = freefall(linear_acceleration,angular_acceleration,gravity_m);
         [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
         [time] = update_frame(time,fps,time_handle,animation_output,radiusmm,marble_angle,position);
+        
+        %%Stats Collection
+
+            time_axis = [time_axis time];
+            position_stats_x = [position_stats_x position(1)];
+            position_stats_y = [position_stats_y position(2)];
+
+            velocity_stats_x = [velocity_stats_x linear_velocity(1)];
+            velocity_stats_y = [velocity_stats_y linear_velocity(2)];
+
+            acceleration_stats_x = [acceleration_stats_x linear_acceleration(1)];
+            acceleration_stats_y = [acceleration_stats_y linear_acceleration(2)];
+            
+            
+            if ~isempty(angular_velocity)
+                angular_velocity_stats = [angular_velocity_stats angular_velocity];
+            else
+                if col_occur
+                    angular_velocity_stats = [angular_velocity_stats 1000*norm(angular_velocity_stats)/radius_m];
+                else
+                    angular_velocity_stats = [angular_velocity_stats 0];
+                end
+            end
+            
+            if ~isempty(angular_acceleration)
+                angular_acceleration_stats = [angular_acceleration_stats angular_acceleration];
+            else
+                if col_occur
+                    angular_acceleration_stats = [angular_acceleration_stats 1000*norm(linear_acceleration)/radius_m];
+                else
+                    angular_acceleration_stats = [angular_acceleration_stats 0];
+                end
+            end
+
         
         for j = 1 : length(ramp_listvar)
             %%Collision Tests
@@ -160,6 +208,38 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
 
     [time] = update_frame(time,fps,time_handle,animation_output,radiusmm,marble_angle,position);
     
+    %%Stats Collection
+
+        time_axis = [time_axis time];
+        position_stats_x = [position_stats_x position(1)];
+        position_stats_y = [position_stats_y position(2)];
+
+        velocity_stats_x = [velocity_stats_x linear_velocity(1)];
+        velocity_stats_y = [velocity_stats_y linear_velocity(2)];
+
+        acceleration_stats_x = [acceleration_stats_x linear_acceleration(1)];
+        acceleration_stats_y = [acceleration_stats_y linear_acceleration(2)];
+
+        if ~isempty(angular_velocity)
+            angular_velocity_stats = [angular_velocity_stats angular_velocity];
+        else
+            if col_occur
+                angular_velocity_stats = [angular_velocity_stats 1000*norm(angular_velocity_stats)/radius_m];
+            else
+                angular_velocity_stats = [angular_velocity_stats 0];
+            end
+        end
+
+        if ~isempty(angular_acceleration)
+            angular_acceleration_stats = [angular_acceleration_stats angular_acceleration];
+        else
+            if col_occur
+                angular_acceleration_stats = [angular_acceleration_stats 1000*norm(linear_acceleration)/radius_m];
+            else
+                angular_acceleration_stats = [angular_acceleration_stats 0];
+            end
+        end
+
     
     if temp_surface(2,1)-temp_surface(1,1) < 0
         if position(1) < temp_surface(2,1) && linear_velocity(1) < 0
@@ -176,6 +256,57 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     end
     
 end
+figure
+subplot(2,1,1)
+plot(time_axis,position_stats_x)
+title('X Position vs time')
+xlabel('time (s)') 
+ylabel('position (mm)')
+
+subplot(2,1,2)
+plot(time_axis,position_stats_y)
+title('Y Position vs time')
+xlabel('time (s)') 
+ylabel('position (mm)')
+
+figure
+subplot(2,1,1)
+plot(time_axis,velocity_stats_x)
+title('X Velocity vs time')
+xlabel('time (s)')
+ylabel('velocity (mm/s)')
+
+subplot(2,1,2)
+plot(time_axis,velocity_stats_y)
+title('Y Velocity vs time')
+xlabel('time (s)')
+ylabel('velocity (mm/s)')
+
+figure
+subplot(2,1,1)
+plot(time_axis,acceleration_stats_x)
+title('X Acceleration vs time')
+xlabel('time (s)') 
+ylabel('acceleration (mm/s^2)')
+
+subplot(2,1,2)
+plot(time_axis,acceleration_stats_y)
+title('Y Acceleration vs time')
+xlabel('time (s)') 
+ylabel('acceleration (mm/s^2)')
+
+figure
+subplot(2,1,1)
+plot(time_axis,angular_velocity_stats)
+title('Angular Velocity vs time')
+xlabel('time (s)') 
+ylabel('angular velocity (rad/s)')
+
+subplot(2,1,2)
+plot(time_axis,angular_acceleration_stats)
+title('Angular Acceleration vs time')
+xlabel('time (s)') 
+ylabel('angular acceleration (rad/s^2)')
 
 function output_to_cmd(t, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration)
 fprintf("t= " + t + ", x= " + position(1) + ", y= " + position(2))
