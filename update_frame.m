@@ -21,7 +21,7 @@ wait_time = 1/fps - toc;
 if wait_time > 0, pause(wait_time); end
 tic
 
-%delete(marble)
+delete(marble)
 delete(halfline)
 delete(scattertemp)
 %%Save Frame

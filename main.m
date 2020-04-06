@@ -19,7 +19,7 @@ coeff_restitution = 0.25;
 %%(1,1) is the bottom left corner of the plate.
 old_position = [0 0];
 old_linear_velocity = [0 0];
-position = [500,505];
+position = [15,600];
 map_position = position;
 %%Linear values
 linear_velocity = [0,0];
@@ -121,7 +121,11 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
                 
                     if impacted == 0
                         [impacted,linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = conservationCollision(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,radius_m,coeff_restitution,ramp_listvar,collided_ramp,position,collision_position);
+                        col_occur = 0;
                     else
+                        linear_velocity = [0 0];
+                        linear_acceleration = [0 0];
+                        impacted = 0;
                         break
                     end
                 end

@@ -16,6 +16,7 @@ function [ old_position, position, marble_angle, linear_velocity, linear_acceler
         old_linear_velocity = linear_velocity;
 
         if collided_ramp ~= 4 %non flat surface
+            
 
               linear_acceleration(1) = -cos(temp_theta)*gravity*sin(temp_theta)/(-0.6)*1000;
               linear_acceleration(2) = -sin(temp_theta)*gravity*sin(temp_theta)/(-0.6)*1000;
