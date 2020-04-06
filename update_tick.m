@@ -15,7 +15,7 @@ function [ old_position, position, marble_angle, linear_velocity, linear_acceler
         old_angular_velocity = angular_velocity;
         old_linear_velocity = linear_velocity;
 
-        if collided_ramp ~= 5 %non flat surface
+        if collided_ramp ~= 4 %non flat surface
 
               linear_acceleration(1) = -cos(temp_theta)*gravity*sin(temp_theta)/(-0.6)*1000;
               linear_acceleration(2) = -sin(temp_theta)*gravity*sin(temp_theta)/(-0.6)*1000;
@@ -23,8 +23,8 @@ function [ old_position, position, marble_angle, linear_velocity, linear_acceler
         end
 
         angular_velocity = old_angular_velocity + angular_acceleration/fps;
-        linear_velocity(1) = old_linear_velocity(1) + linear_acceleration(1)/(fps)^2;
-        linear_velocity(2) = old_linear_velocity(2) + linear_acceleration(2)/(fps)^2;
+        linear_velocity(1) = old_linear_velocity(1) + linear_acceleration(1)/(fps);
+        linear_velocity(2) = old_linear_velocity(2) + linear_acceleration(2)/(fps);
         
         position(2) = position(2) + linear_velocity(2)*1/fps + 0.5*linear_acceleration(2)*(1/fps)^2;
         position(1) = position(1) + linear_velocity(1)*1/fps + 0.5*linear_acceleration(1)*(1/fps)^2;
