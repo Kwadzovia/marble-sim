@@ -81,6 +81,25 @@ end
 %%Plot wheel
 wheel_image = rectangle('Position',[130 330 25  25],'Curvature',[0.5,1],'EdgeColor','r','FaceColor',[0.5 0.1 .1]);
 
+%%all this junk is to draw the circle
+circ_rad = 990;
+circ_centre = [260 1500];
+thetacirc = linspace(0,2*pi,1000);
+circx = circ_rad*cos(thetacirc)+circ_centre(1);
+circy = circ_rad*sin(thetacirc)+circ_centre(2);
+for i = 1:length(circx)
+    if circx(i) < 40
+        circx(i) = 40;
+        circy(i) = 510;
+    end
+end
+for i = 1:length(circy)
+    if circy(i) > 590
+        circy(i) = 510;
+    end
+end
+plot(circx,circy); %%end of trash to draw circle
+
 
 %%Used in https://www.mathworks.com/matlabcentral/fileexchange/27900-ball-bounce-physics-with-spin?focused=5155060&tab=function
 %%Stop Button for Window
