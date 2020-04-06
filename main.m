@@ -44,6 +44,7 @@ fps = 50;
 time = 0;
 collided_ramp = 0;
 impacted = 0;
+wheel_past = 0;
 %%=============================Window Setup===============================
 anim_window = figure;
 a = [0:0.1:2*pi];
@@ -63,6 +64,8 @@ for i = 1:1:length(ramp_listvar)
     current_ramp = ramp_listvar{i};
     line([current_ramp(:,1)],[current_ramp(:,2)])
 end
+%%Plot wheel
+wheel_image = rectangle('Position',[130 330 25  25],'Curvature',[0.5,1],'EdgeColor','r','FaceColor',[0.5 0.1 .1]);
 
 
 %%Used in https://www.mathworks.com/matlabcentral/fileexchange/27900-ball-bounce-physics-with-spin?focused=5155060&tab=function
@@ -76,6 +79,12 @@ tic
 while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     
     while ~col_occur
+            
+            %%End of simulation
+            if position(1) > 600 && position(2) < 0
+                stop_running = true
+                break
+            end
         
         [linear_acceleration,angular_acceleration ] = freefall(linear_acceleration,angular_acceleration,gravity_m);
         [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
@@ -135,7 +144,17 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     end
     %%output_to_cmd(time, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
-    
+    if collided_ramp == 6 && ~wheel_past
+        %%141,150
+       if position(1) < 145 && linear_velocity(1) < 0
+          linear_velocity = -coeff_restitution*linear_velocity;
+          angular_velocity = 0;
+          wheel_past = 1;
+          
+          set(wheel_image,'EdgeColor','g','FaceColor',[0.1 0.5 .1])
+       end
+    end
+        
     
     [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
 
@@ -152,9 +171,9 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
         end
     end
     
-    %%Impact physics can happen after a collision detected from freefall
-    %%After maybe 1 impact go back to rolling without slipping
-    %%Physics for any loops will also have to be special
+    if position(1) > 600 && position(2) < 0
+        stop_running = true
+    end
     
 end
 
