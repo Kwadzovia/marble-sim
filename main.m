@@ -199,8 +199,11 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
                         [impacted,linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = conservationCollision(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,radius_m,coeff_restitution,ramp_listvar,collided_ramp,position,collision_position);
                         col_occur = 0;
                     else
-                        linear_velocity = [0 0];
+%                         linear_velocity = [0 0];
+                        [impacted,linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = conservationCollision(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,radius_m,coeff_restitution,ramp_listvar,collided_ramp,position,collision_position);
+                        linear_velocity(2) = 0;
                         linear_acceleration = [0 0];
+                        angular_velocity = 0;
                         impacted = 0;
                         break
                     end
