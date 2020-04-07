@@ -17,10 +17,13 @@ function [ old_position, position, marble_angle, linear_velocity, linear_acceler
 
         if collided_ramp ~= 4 %non flat surface
             
-
-              linear_acceleration(1) = -cos(temp_theta)*gravity*sin(temp_theta)/(-0.6)*1000;
-              linear_acceleration(2) = -sin(temp_theta)*gravity*sin(temp_theta)/(-0.6)*1000;
-              angular_acceleration = -(1/radius_m)*gravity*sin(temp_theta)/(-0.6)*1000;
+            if collided_ramp == 15
+                  [linear_acceleration angular_acceleration] = circle_physics(position)
+            else
+                  linear_acceleration(1) = cos(temp_theta)*gravity*sin(temp_theta)/(1+(sqrt(2/5*radius_m^2))^2/radius_m^2)*1000;
+                  linear_acceleration(2) = sin(temp_theta)*gravity*sin(temp_theta)/(1+(sqrt(2/5*radius_m^2))^2/radius_m^2)*1000;
+                  angular_acceleration = -(1/radius_m)*gravity*sin(temp_theta)/(-0.6)*1000;
+            end
         end
 
         angular_velocity = old_angular_velocity + angular_acceleration/fps;

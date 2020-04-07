@@ -40,7 +40,7 @@ col_occur = false;
 animation_output = [];
 current_time = 0;
 stop_running = false;
-fps = 50;
+fps = 50; 
 time = 0;
 collided_ramp = 0;
 impacted = 0;
@@ -211,7 +211,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     end
     %%output_to_cmd(time, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
-    if collided_ramp == 6 && ~wheel_past
+    if collided_ramp == 5 && ~wheel_past
         %%141,150
        if position(1) < 145 && linear_velocity(1) < 0
           linear_velocity = -coeff_restitution*linear_velocity;
@@ -259,14 +259,19 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
             end
         end
 
-    
-    if temp_surface(2,1)-temp_surface(1,1) < 0
-        if position(1) < temp_surface(2,1) && linear_velocity(1) < 0
+    if collided_ramp == 15
+        if position(1) < 42 && linear_velocity(1) < 0 %% Harcoded round ramp ending
             col_occur = false;
         end
     else
-        if position(1) > temp_surface(2,1) && linear_velocity(1) > 0
-            col_occur = false;
+        if temp_surface(2,1)-temp_surface(1,1) < 0
+            if position(1) < temp_surface(2,1) && linear_velocity(1) < 0
+                col_occur = false;
+            end
+        else
+            if position(1) > temp_surface(2,1) && linear_velocity(1) > 0
+                col_occur = false;
+            end
         end
     end
     

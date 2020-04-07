@@ -3,7 +3,7 @@ function [accel, angular] = circle_physics(position)
 %%inits
 r = 990;
 marbr = 5/1000;
-g = 9.81;
+g = -9.806374;
 friction = 0.22;
 centre = [260 1500];
 
@@ -20,8 +20,8 @@ deltaystart = centre(2)-position(2);
 thetastart = tan(deltaystart/deltaxstart);
 
 %%accel calculations
-accelx = friction*g*cos(thetastart)*cos(thetastart)/2*5;
-accely = friction*g*cos(thetastart)*sin(thetastart)/2*5;
+accelx = 1000*friction*g*cos(thetastart)*cos(thetastart)/2*5;
+accely = 1000*friction*g*cos(thetastart)*sin(thetastart)/2*5;
 angular = accelx/marbr;
 accel = [accelx, accely];
 
