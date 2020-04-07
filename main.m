@@ -23,7 +23,7 @@ position = [15,600];
 map_position = position;
 %%Linear values
 linear_velocity = [0,0];
-linear_acceleration = [0,gravity_m];
+linear_acceleration = [0,gravity_m*1000];
 %%angular values
 angular_velocity = 0;
 angular_acceleration = 0;
@@ -140,7 +140,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
                 angular_velocity_stats = [angular_velocity_stats angular_velocity];
             else
                 if col_occur
-                    angular_velocity_stats = [angular_velocity_stats 1000*norm(angular_velocity_stats)/radius_m];
+                    angular_velocity_stats = [angular_velocity_stats -norm(angular_velocity_stats)/radius_m];
                 else
                     angular_velocity_stats = [angular_velocity_stats 0];
                 end
@@ -150,7 +150,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
                 angular_acceleration_stats = [angular_acceleration_stats angular_acceleration];
             else
                 if col_occur
-                    angular_acceleration_stats = [angular_acceleration_stats 1000*norm(linear_acceleration)/radius_m];
+                    angular_acceleration_stats = [angular_acceleration_stats -norm(linear_acceleration)/radius_m];
                 else
                     angular_acceleration_stats = [angular_acceleration_stats 0];
                 end
@@ -243,7 +243,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
             angular_velocity_stats = [angular_velocity_stats angular_velocity];
         else
             if col_occur
-                angular_velocity_stats = [angular_velocity_stats 1000*norm(angular_velocity_stats)/radius_m];
+                angular_velocity_stats = [angular_velocity_stats norm(angular_velocity_stats)/radius_m];
             else
                 angular_velocity_stats = [angular_velocity_stats 0];
             end
@@ -253,7 +253,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
             angular_acceleration_stats = [angular_acceleration_stats angular_acceleration];
         else
             if col_occur
-                angular_acceleration_stats = [angular_acceleration_stats 1000*norm(linear_acceleration)/radius_m];
+                angular_acceleration_stats = [angular_acceleration_stats norm(linear_acceleration)/radius_m];
             else
                 angular_acceleration_stats = [angular_acceleration_stats 0];
             end

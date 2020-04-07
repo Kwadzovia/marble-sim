@@ -22,7 +22,7 @@ thetastart = tan(deltaystart/deltaxstart);
 %%accel calculations
 accelx = 1000*friction*g*cos(thetastart)*cos(thetastart)/2*5;
 accely = 1000*friction*g*cos(thetastart)*sin(thetastart)/2*5;
-angular = accelx/marbr;
+angular = -accelx/(1000*marbr);
 accel = [accelx, accely];
 
 end
