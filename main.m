@@ -7,14 +7,14 @@ close all;
 %%================================constants================================
 gravity = -9806.374046543; %%mm/s^2
 gravity_m = -9.806374;
-friction = 0.22;
-mass = 0.002; %%kg
+friction = 0.5;
+mass = 0.010; %%kg
 radiusmm = 5; %%mm
 radius_m = radiusmm/1000;
 impactF = 1; %%force of initial impact. N
 impactT = 0.017; %%length of initial impact. s
 marble_angle = 0;
-coeff_restitution = 0.25;
+coeff_restitution = 0.2;
 %%=============================initial conditions=========================
 %%(1,1) is the bottom left corner of the plate.
 old_position = [0 0];
@@ -40,11 +40,12 @@ col_occur = false;
 animation_output = [];
 current_time = 0;
 stop_running = false;
-fps = 50; 
+fps = 60; 
 time = 0;
 collided_ramp = 0;
 impacted = 0;
 wheel_past = 0;
+circle_temp_position = 0;
 
 %%=============================Stats Setup===============================
 time_axis = [];
@@ -120,7 +121,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
             end
         
         [linear_acceleration,angular_acceleration ] = freefall(linear_acceleration,angular_acceleration,gravity_m);
-        [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
+        [circle_temp_position,old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(circle_temp_position,mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
         [time] = update_frame(time,fps,time_handle,animation_output,radiusmm,marble_angle,position);
         
         %%Stats Collection
@@ -199,7 +200,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
                         [impacted,linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = conservationCollision(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,radius_m,coeff_restitution,ramp_listvar,collided_ramp,position,collision_position);
                         col_occur = 0;
                     else
-%                         linear_velocity = [0 0];
+                        linear_velocity = [0 0];
                         [impacted,linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = conservationCollision(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,radius_m,coeff_restitution,ramp_listvar,collided_ramp,position,collision_position);
                         linear_velocity(2) = 0;
                         linear_acceleration = [0 0];
@@ -226,7 +227,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     end
         
     
-    [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
+    [circle_temp_position,old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(circle_temp_position,mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
 
     [time] = update_frame(time,fps,time_handle,animation_output,radiusmm,marble_angle,position);
     
@@ -283,6 +284,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     end
     
 end
+plot(position_stats_x,position_stats_y,'Color','r')
 figure
 subplot(2,1,1)
 plot(time_axis,position_stats_x)

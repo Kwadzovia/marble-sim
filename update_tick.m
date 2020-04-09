@@ -1,11 +1,10 @@
 %%This updates position, velocity, and acceleration based on values from
 %%last tick.
-function [ old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m, ramp_list,collided_ramp)
+function [ circle_temp,old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(circle_temp,mass,fps,position,marble_angle,gravity, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m, ramp_list,collided_ramp)
 
     %%time is 1/fps
     
     old_position = position;
-    
     if col_occur
        current_ramp = ramp_list{collided_ramp};
        ramp_direction = [current_ramp(2,1)-current_ramp(1,1) current_ramp(2,2)-current_ramp(1,2)];
@@ -18,7 +17,8 @@ function [ old_position, position, marble_angle, linear_velocity, linear_acceler
         if collided_ramp ~= 4 %non flat surface
             
             if collided_ramp == 15
-                  [linear_acceleration angular_acceleration] = circle_physics(position);
+
+                  [linear_acceleration angular_acceleration] = circle_physics(position,circle_temp,linear_velocity);
             else
                   linear_acceleration(1) = cos(temp_theta)*gravity*sin(temp_theta)/(1+(sqrt(2/5*radius_m^2))^2/radius_m^2)*1000;
                   linear_acceleration(2) = sin(temp_theta)*gravity*sin(temp_theta)/(1+(sqrt(2/5*radius_m^2))^2/radius_m^2)*1000;
@@ -46,5 +46,5 @@ function [ old_position, position, marble_angle, linear_velocity, linear_acceler
 
 
     end
-
+    circle_temp = position;
 end
