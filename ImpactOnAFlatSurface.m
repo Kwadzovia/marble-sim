@@ -41,8 +41,8 @@ linVel(1) = linVel(1) *1000;
 
 angVel = -linVel(1)/(radius*1000);
 
-% angAccel = -5/2*friction*gravity/radius*1000;
-% linAccel(1) = -angAccel*radius;
+angAccel = -5/2*friction*gravity/(radius*1000);
+linAccel(1) = -angAccel*radius;
 impacted = 0;
 
 

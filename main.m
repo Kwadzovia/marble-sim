@@ -7,14 +7,14 @@ close all;
 %%================================constants================================
 gravity = -9806.374046543; %%mm/s^2
 gravity_m = -9.806374;
-friction = 0.22;
-mass = 0.002; %%kg
+friction = 0.5;
+mass = 0.010; %%kg
 radiusmm = 5; %%mm
 radius_m = radiusmm/1000;
 impactF = 1; %%force of initial impact. N
 impactT = 0.017; %%length of initial impact. s
 marble_angle = 0;
-coeff_restitution = 0.25;
+coeff_restitution = 0.2;
 %%=============================initial conditions=========================
 %%(1,1) is the bottom left corner of the plate.
 old_position = [0 0];
@@ -23,7 +23,7 @@ position = [15,600];
 map_position = position;
 %%Linear values
 linear_velocity = [0,0];
-linear_acceleration = [0,gravity_m];
+linear_acceleration = [0,gravity_m*1000];
 %%angular values
 angular_velocity = 0;
 angular_acceleration = 0;
@@ -40,11 +40,12 @@ col_occur = false;
 animation_output = [];
 current_time = 0;
 stop_running = false;
-fps = 50;
+fps = 60; 
 time = 0;
 collided_ramp = 0;
 impacted = 0;
 wheel_past = 0;
+circle_temp_position = 0;
 
 %%=============================Stats Setup===============================
 time_axis = [];
@@ -120,7 +121,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
             end
         
         [linear_acceleration,angular_acceleration ] = freefall(linear_acceleration,angular_acceleration,gravity_m);
-        [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
+        [circle_temp_position,old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(circle_temp_position,mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
         [time] = update_frame(time,fps,time_handle,animation_output,radiusmm,marble_angle,position);
         
         %%Stats Collection
@@ -140,7 +141,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
                 angular_velocity_stats = [angular_velocity_stats angular_velocity];
             else
                 if col_occur
-                    angular_velocity_stats = [angular_velocity_stats 1000*norm(angular_velocity_stats)/radius_m];
+                    angular_velocity_stats = [angular_velocity_stats -norm(angular_velocity_stats)/radius_m];
                 else
                     angular_velocity_stats = [angular_velocity_stats 0];
                 end
@@ -150,7 +151,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
                 angular_acceleration_stats = [angular_acceleration_stats angular_acceleration];
             else
                 if col_occur
-                    angular_acceleration_stats = [angular_acceleration_stats 1000*norm(linear_acceleration)/radius_m];
+                    angular_acceleration_stats = [angular_acceleration_stats -norm(linear_acceleration)/radius_m];
                 else
                     angular_acceleration_stats = [angular_acceleration_stats 0];
                 end
@@ -200,7 +201,10 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
                         col_occur = 0;
                     else
                         linear_velocity = [0 0];
+                        [impacted,linear_acceleration, angular_acceleration, linear_velocity, angular_velocity] = conservationCollision(linear_velocity,angular_velocity,linear_acceleration,angular_acceleration,radius_m,coeff_restitution,ramp_listvar,collided_ramp,position,collision_position);
+                        linear_velocity(2) = 0;
                         linear_acceleration = [0 0];
+                        angular_velocity = 0;
                         impacted = 0;
                         break
                     end
@@ -211,7 +215,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     end
     %%output_to_cmd(time, position, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration);
     
-    if collided_ramp == 6 && ~wheel_past
+    if collided_ramp == 5 && ~wheel_past
         %%141,150
        if position(1) < 145 && linear_velocity(1) < 0
           linear_velocity = -coeff_restitution*linear_velocity;
@@ -223,7 +227,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     end
         
     
-    [old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
+    [circle_temp_position,old_position, position, marble_angle, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration] = update_tick(circle_temp_position,mass,fps,position,marble_angle,gravity_m, linear_velocity, linear_acceleration, angular_velocity, angular_acceleration, col_occur, radius_m,ramp_list,collided_ramp);
 
     [time] = update_frame(time,fps,time_handle,animation_output,radiusmm,marble_angle,position);
     
@@ -243,7 +247,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
             angular_velocity_stats = [angular_velocity_stats angular_velocity];
         else
             if col_occur
-                angular_velocity_stats = [angular_velocity_stats 1000*norm(angular_velocity_stats)/radius_m];
+                angular_velocity_stats = [angular_velocity_stats norm(angular_velocity_stats)/radius_m];
             else
                 angular_velocity_stats = [angular_velocity_stats 0];
             end
@@ -253,20 +257,25 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
             angular_acceleration_stats = [angular_acceleration_stats angular_acceleration];
         else
             if col_occur
-                angular_acceleration_stats = [angular_acceleration_stats 1000*norm(linear_acceleration)/radius_m];
+                angular_acceleration_stats = [angular_acceleration_stats norm(linear_acceleration)/radius_m];
             else
                 angular_acceleration_stats = [angular_acceleration_stats 0];
             end
         end
 
-    
-    if temp_surface(2,1)-temp_surface(1,1) < 0
-        if position(1) < temp_surface(2,1) && linear_velocity(1) < 0
+    if collided_ramp == 15
+        if position(1) < 42 && linear_velocity(1) < 0 %% Harcoded round ramp ending
             col_occur = false;
         end
     else
-        if position(1) > temp_surface(2,1) && linear_velocity(1) > 0
-            col_occur = false;
+        if temp_surface(2,1)-temp_surface(1,1) < 0
+            if position(1) < temp_surface(2,1) && linear_velocity(1) < 0
+                col_occur = false;
+            end
+        else
+            if position(1) > temp_surface(2,1) && linear_velocity(1) > 0
+                col_occur = false;
+            end
         end
     end
     
@@ -275,6 +284,7 @@ while ~stop_running %%Runs forever, kinda buggy if you don't press stop button
     end
     
 end
+plot(position_stats_x,position_stats_y,'Color','r')
 figure
 subplot(2,1,1)
 plot(time_axis,position_stats_x)
